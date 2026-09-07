@@ -1,0 +1,325 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>How DocuMind Works — AI Document Intelligence</title>
+
+  <!-- Google Fonts -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=Lexend:wght@500;600;700;800&display=swap" rel="stylesheet">
+
+  <style>
+    :root {
+      --bg: #F4F7F5;
+      --card: #ffffff;
+      --ink: #0B1210;
+      --ink-soft: #4B5A54;
+      --accent: #046C4E;
+      --accent-soft: #E5F3EC;
+      --accent-soft-2: #EDF6F1;
+      --line: #DCE6E1;
+      --flow-bg: #E5F3EC;
+      --arrow: #9BAFA7;
+      color-scheme: light;
+    }
+
+    html[data-theme="dark"] {
+      --bg: #080B0A;
+      --card: #0F1613;
+      --ink: #EDF3F0;
+      --ink-soft: #8FA39A;
+      --accent: #12B981;
+      --accent-soft: #12211B;
+      --accent-soft-2: #0F1A16;
+      --line: #1E2A25;
+      --flow-bg: #12211B;
+      --arrow: #4B5D55;
+      color-scheme: dark;
+    }
+
+    * { box-sizing: border-box; }
+
+    body {
+      margin: 0;
+      font-family: 'Inter', system-ui, sans-serif;
+      background: var(--bg);
+      color: var(--ink);
+      transition: background-color .25s ease, color .25s ease;
+    }
+
+    header {
+      height: 80px;
+      background: var(--card);
+      border-bottom: 1px solid var(--line);
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 0 8%;
+      transition: background-color .25s ease, border-color .25s ease;
+    }
+
+    .brand { display: flex; align-items: center; gap: 12px; }
+    .logo {
+      width: 42px;
+      height: 42px;
+      border-radius: 12px;
+      background: linear-gradient(135deg, var(--accent) 0%, #0E9A6C 100%);
+      color: white;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 20px;
+      font-weight: bold;
+    }
+
+    .brand-title { font-family: 'Lexend', sans-serif; font-size: 20px; font-weight: 700; }
+    .brand-subtitle { font-size: 13px; color: var(--ink-soft); margin-top: 2px; }
+    .header-actions { display: flex; align-items: center; gap: 10px; }
+
+    .theme-toggle {
+      width: 40px;
+      height: 40px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      border: 1px solid var(--line);
+      border-radius: 10px;
+      background: transparent;
+      color: var(--ink-soft);
+      cursor: pointer;
+      transition: 0.2s;
+    }
+
+    .theme-toggle:hover { border-color: var(--accent); color: var(--accent); }
+    .theme-toggle .icon-moon,
+    html[data-theme="dark"] .theme-toggle .icon-sun { display: none; }
+    html[data-theme="dark"] .theme-toggle .icon-moon { display: inline-block; }
+
+    .back-btn {
+      text-decoration: none;
+      border: 1px solid var(--line);
+      border-radius: 10px;
+      padding: 10px 18px;
+      color: var(--ink-soft);
+      font-size: 14px;
+      font-weight: 600;
+      transition: 0.2s;
+    }
+    .back-btn:hover { border-color: var(--accent); color: var(--accent); }
+
+    main { max-width: 1050px; margin: auto; padding: 60px 25px; }
+
+    .hero { text-align: center; margin-bottom: 55px; }
+    .hero h1 { font-family: 'Lexend', sans-serif; font-size: 44px; font-weight: 800; margin: 0 0 15px; }
+    .hero h1 span { color: var(--accent); }
+    .hero p { font-size: 18px; color: var(--ink-soft); max-width: 700px; margin: auto; line-height: 1.6; }
+
+    .steps {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 20px;
+    }
+
+    .step {
+      background: var(--card);
+      border: 1px solid var(--line);
+      border-radius: 20px;
+      padding: 28px 24px;
+      box-shadow: 0 5px 20px rgba(11, 18, 16, 0.04);
+      transition: background-color .25s ease, border-color .25s ease;
+    }
+
+    .step-icon {
+      width: 48px;
+      height: 48px;
+      margin: 0 0 16px;
+      border-radius: 14px;
+      background: var(--accent-soft);
+      color: var(--accent);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 22px;
+      font-weight: 700;
+    }
+
+    .step h2 { font-family: 'Lexend', sans-serif; font-size: 18px; font-weight: 700; margin: 0 0 10px; }
+    .step p { color: var(--ink-soft); line-height: 1.6; font-size: 14px; margin: 0; }
+
+    .workflow {
+      margin-top: 55px;
+      background: var(--card);
+      border: 1px solid var(--line);
+      border-radius: 24px;
+      padding: 35px;
+      transition: background-color .25s ease, border-color .25s ease;
+    }
+
+    .workflow h2 { text-family: 'Lexend', sans-serif; text-align: center; margin-top: 0; font-size: 26px; }
+
+    .flow {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 12px;
+      flex-wrap: wrap;
+      margin-top: 30px;
+    }
+
+    .flow-item {
+      padding: 12px 18px;
+      border-radius: 12px;
+      background: var(--flow-bg);
+      color: var(--accent);
+      font-weight: 700;
+      font-size: 14px;
+    }
+
+    .arrow { color: var(--arrow); font-size: 20px; }
+
+    .tips {
+      margin-top: 35px;
+      background: var(--accent-soft-2);
+      border: 1px solid var(--line);
+      border-radius: 20px;
+      padding: 30px;
+      transition: background-color .25s ease;
+    }
+
+    .tips h2 { font-family: 'Lexend', sans-serif; margin-top: 0; font-size: 21px; }
+    .tips ul { margin-bottom: 0; padding-left: 20px; }
+    .tips li { margin-bottom: 10px; color: var(--ink-soft); line-height: 1.6; font-size: 15px; }
+
+    @media (max-width: 850px) {
+      .steps { grid-template-columns: repeat(2, 1fr); }
+      .hero h1 { font-size: 36px; }
+    }
+
+    @media (max-width: 550px) {
+      .steps { grid-template-columns: 1fr; }
+      header { padding: 0 20px; }
+      .brand-subtitle { display: none; }
+    }
+  </style>
+</head>
+
+<body>
+
+  <header>
+    <div class="brand">
+      <div class="logo">📄</div>
+      <div>
+        <div class="brand-title">DocuMind</div>
+        <div class="brand-subtitle">AI Document Intelligence System</div>
+      </div>
+    </div>
+
+    <div class="header-actions">
+      <button class="theme-toggle" type="button" aria-label="Toggle dark mode">
+        <svg class="icon-sun" width="16" height="16" viewBox="0 0 24 24" fill="none">
+          <circle cx="12" cy="12" r="4" stroke="currentColor" stroke-width="1.8" />
+          <path d="M12 2v2M12 20v2M4 4l1.5 1.5M18.5 18.5 20 20M2 12h2M20 12h2M4 20l1.5-1.5M18.5 5.5 20 4" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/>
+        </svg>
+        <svg class="icon-moon" width="16" height="16" viewBox="0 0 24 24" fill="none">
+          <path d="M20 14.5A8.5 8.5 0 1 1 9.5 4a7 7 0 0 0 10.5 10.5Z" stroke="currentColor" stroke-width="1.8" stroke-linejoin="round"/>
+        </svg>
+      </button>
+
+      <a href="index.html" class="back-btn">
+        ← Back to DocuMind
+      </a>
+    </div>
+  </header>
+
+  <main>
+    <section class="hero">
+      <h1>How <span>DocuMind</span> Works</h1>
+      <p>
+        DocuMind transforms PDFs and image documents into structured intelligence. Upload regulations, contracts, or scanned documents, and run OCR, RAG Q&amp;A, AI Summaries, Keyword Extraction, and Document Comparison.
+      </p>
+    </section>
+
+    <section class="steps">
+      <div class="step">
+        <div class="step-icon">📤</div>
+        <h2>1. Upload Document</h2>
+        <p>Upload any PDF document, PNG, JPG, or JPEG file. DocuMind supports files up to 20MB.</p>
+      </div>
+
+      <div class="step">
+        <div class="step-icon">🔍</div>
+        <h2>2. Hybrid OCR &amp; Text Extraction</h2>
+        <p>Native PyMuPDF text extraction combined with Tesseract &amp; Gemini Vision OCR reads digital and scanned pages accurately.</p>
+      </div>
+
+      <div class="step">
+        <div class="step-icon">💬</div>
+        <h2>3. Multi-Page RAG Q&amp;A</h2>
+        <p>Ask specific questions (e.g. "What is the minimum attendance requirement?") and get grounded answers citing exact page numbers.</p>
+      </div>
+
+      <div class="step">
+        <div class="step-icon">⚡</div>
+        <h2>4. AI Summarization</h2>
+        <p>Generate executive summaries, key takeaways, critical numbers &amp; requirements, and action item checklists with one click.</p>
+      </div>
+
+      <div class="step">
+        <div class="step-icon">🏷️</div>
+        <h2>5. Keyword &amp; Entity Extractor</h2>
+        <p>Automatically extract named entities, regulations, numerical rules, topics, and frequency terms.</p>
+      </div>
+
+      <div class="step">
+        <div class="step-icon">⚖️</div>
+        <h2>6. Document Compare &amp; Reports</h2>
+        <p>Compare two documents side-by-side to highlight differences, and download Markdown, HTML, or TXT reports.</p>
+      </div>
+    </section>
+
+    <section class="workflow">
+      <h2>Complete Document Intelligence Pipeline</h2>
+      <div class="flow">
+        <div class="flow-item">Upload PDF / Image</div>
+        <div class="arrow">→</div>
+        <div class="flow-item">OCR Extraction</div>
+        <div class="arrow">→</div>
+        <div class="flow-item">RAG Q&amp;A + Citations</div>
+        <div class="arrow">→</div>
+        <div class="flow-item">AI Summary</div>
+        <div class="arrow">→</div>
+        <div class="flow-item">Compare &amp; Export</div>
+      </div>
+    </section>
+
+    <section class="tips">
+      <h2>💡 Pro Tips for Best Results</h2>
+      <ul>
+        <li><strong>Clear Scans:</strong> Upload high-resolution images or standard PDF files for peak OCR accuracy.</li>
+        <li><strong>Specific Questions:</strong> Ask precise questions like <em>"What is the minimum attendance requirement?"</em> or <em>"What is the late submission fee?"</em> for targeted page citations.</li>
+        <li><strong>Interactive Tags:</strong> Click any extracted keyword chip to instantly question the document about that topic.</li>
+        <li><strong>Download Reports:</strong> Use the Export &amp; Reports tab to download full Markdown or HTML intelligence reports for offline review.</li>
+      </ul>
+    </section>
+  </main>
+
+  <script>
+    (function () {
+      const THEME_STORAGE_KEY = 'documind_theme';
+      function getSystemTheme() { return window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light'; }
+      function applyTheme(theme) { document.documentElement.setAttribute('data-theme', theme); }
+      function setTheme(theme) { applyTheme(theme); localStorage.setItem(THEME_STORAGE_KEY, theme); }
+
+      document.querySelectorAll('.theme-toggle').forEach((btn) => {
+        btn.addEventListener('click', () => {
+          const next = document.documentElement.getAttribute('data-theme') === 'dark' ? 'light' : 'dark';
+          setTheme(next);
+        });
+      });
+      applyTheme(localStorage.getItem(THEME_STORAGE_KEY) || getSystemTheme());
+    })();
+  </script>
+
+</body>
+</html>
