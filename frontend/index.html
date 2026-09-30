@@ -12,6 +12,9 @@
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=Lexend:wght@500;600;700;800&display=swap" rel="stylesheet">
 
+<!-- PDF.js CDN for reliable cross-browser PDF page rendering -->
+<script src="https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.min.js"></script>
+
 <style>
   :root {
     --ink: #0B1210;
@@ -221,6 +224,26 @@
         <p class="text-xs text-[var(--ink-soft)] leading-relaxed">Compare two documents side-by-side to highlight policy changes, differences, and similarities.</p>
       </div>
     </div>
+
+    <!-- History & Previous Search Sessions (Landing View) -->
+    <div id="landing-history-section" class="mt-10 fade-up" style="animation-delay:.15s">
+      <div class="flex items-center justify-between mb-4 border-b border-[var(--line)] pb-3">
+        <div class="flex items-center gap-2">
+          <span class="text-lg">🕒</span>
+          <div>
+            <h2 class="font-display font-bold text-lg">History &amp; Previous Sessions</h2>
+            <p class="text-xs text-[var(--ink-soft)]">Reopen any previously processed document and its saved search/Q&amp;A history</p>
+          </div>
+        </div>
+        <span id="landing-history-count" class="text-xs font-bold text-[var(--accent)] bg-[var(--accent-soft)] px-3 py-1 rounded-full">0 sessions</span>
+      </div>
+
+      <div id="landing-history-empty" class="hidden text-center py-8 bg-white border border-[var(--line)] rounded-2xl card-shadow text-xs text-[var(--ink-soft)] font-medium">
+        No previous search sessions found. Upload a document above to get started!
+      </div>
+
+      <div id="landing-history-list" class="grid grid-cols-1 sm:grid-cols-2 gap-4"></div>
+    </div>
   </main>
 </div>
 
@@ -250,7 +273,7 @@
 <div id="workspace-view" data-view="workspace" class="flex-1 flex flex-col">
 
   <header class="border-b border-[var(--line)] bg-white/80 backdrop-blur sticky top-0 z-20">
-    <div class="max-w-7xl mx-auto px-6 py-3.5 flex items-center justify-between gap-4">
+    <div class="max-w-[1600px] mx-auto px-6 py-3.5 flex items-center justify-between gap-4">
       <div class="flex items-center gap-3">
         <div class="w-9 h-9 rounded-xl accent-grad flex items-center justify-center text-white font-bold text-base">
           📄
@@ -267,7 +290,7 @@
         <select id="doc-selector" class="bg-transparent text-xs font-bold text-[var(--ink)] focus:outline-none max-w-[200px] truncate cursor-pointer">
           <option value="">Loading documents...</option>
         </select>
-        <button id="header-upload-btn" class="text-xs font-bold text-[var(--accent)] hover:underline shrink-0">+ Upload New</button>
+        <button id="header-upload-btn" class="text-xs font-bold text-[var(--accent)] border border-[var(--accent-soft-2)] bg-[var(--accent-soft)] hover:bg-[var(--accent-soft-2)] px-2.5 py-1 rounded-lg transition shrink-0 focus-ring" title="Start a fresh new session">+ New Session</button>
       </div>
 
       <div class="flex items-center gap-2">
@@ -288,7 +311,7 @@
     </div>
   </header>
 
-  <main class="max-w-7xl mx-auto px-6 py-6 grid grid-cols-1 lg:grid-cols-[280px_1fr] gap-6 flex-1 w-full">
+  <main class="max-w-[1600px] mx-auto px-6 py-6 grid grid-cols-1 lg:grid-cols-[260px_1fr_420px] xl:grid-cols-[280px_1fr_480px] gap-6 flex-1 w-full">
 
     <!-- LEFT SIDEBAR: Document details & page index -->
     <aside class="space-y-4">
@@ -377,7 +400,7 @@
           <form id="qa-form" class="flex items-center gap-2 mb-6">
             <input id="qa-input" type="text" placeholder="e.g. What is the minimum attendance requirement?" class="flex-1 text-sm border border-[var(--line)] rounded-xl px-4 py-3 outline-none focus:border-[var(--accent)] focus-ring bg-[var(--bg)] font-medium">
             <button type="submit" class="accent-grad text-white px-5 py-3 rounded-xl font-bold text-sm flex items-center gap-2 hover:brightness-105 active:scale-95 transition shadow-sm shrink-0">
-              <span>Ask AI</span>
+              <span>✨ Ask DocuMind</span>
               <svg width="16" height="16" viewBox="0 0 24 24" fill="none"><path d="m3 12 18-8-8 18-2.5-7.5L3 12Z" stroke="white" stroke-width="2" stroke-linejoin="round" stroke-linecap="round"/></svg>
             </button>
           </form>
@@ -616,11 +639,11 @@
         <!-- =================================================== -->
         <div id="tab-reports" class="tab-panel">
           <div class="mb-6">
-            <h2 class="font-display font-bold text-lg">Downloadable Reports</h2>
-            <p class="text-xs text-[var(--ink-soft)]">Export comprehensive intelligence reports, summaries, and transcripts.</p>
+            <h2 class="font-display font-bold text-lg">Downloadable Reports &amp; Intelligence Exports</h2>
+            <p class="text-xs text-[var(--ink-soft)]">Export comprehensive intelligence reports, executive summaries, Q&amp;A transcripts, and structured data.</p>
           </div>
 
-          <div class="grid grid-cols-1 sm:grid-cols-3 gap-5">
+          <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-5">
             <div class="bg-[var(--bg)] border border-[var(--line)] rounded-2xl p-5 flex flex-col justify-between">
               <div>
                 <div class="text-2xl mb-2">📄</div>
@@ -628,7 +651,7 @@
                 <p class="text-xs text-[var(--ink-soft)] mb-4">Complete structured document intelligence report formatted in clean Markdown.</p>
               </div>
               <button id="download-md-btn" class="w-full accent-grad text-white font-bold text-xs py-2.5 rounded-xl hover:brightness-105 transition">
-                Download Markdown
+                Download Markdown (.md)
               </button>
             </div>
 
@@ -639,7 +662,18 @@
                 <p class="text-xs text-[var(--ink-soft)] mb-4">Self-contained HTML report designed for viewing and printing in any browser.</p>
               </div>
               <button id="download-html-btn" class="w-full text-[var(--accent)] border border-[var(--accent)] bg-white font-bold text-xs py-2.5 rounded-xl hover:bg-[var(--accent-soft)] transition">
-                Download HTML
+                Download HTML (.html)
+              </button>
+            </div>
+
+            <div class="bg-[var(--bg)] border border-[var(--line)] rounded-2xl p-5 flex flex-col justify-between">
+              <div>
+                <div class="text-2xl mb-2">📝</div>
+                <p class="font-bold text-sm mb-1">Plain Text Summary (.txt)</p>
+                <p class="text-xs text-[var(--ink-soft)] mb-4">Extracted document text and executive overview in plain text format.</p>
+              </div>
+              <button id="download-txt-btn" class="w-full text-[var(--ink)] border border-[var(--line)] bg-white font-bold text-xs py-2.5 rounded-xl hover:bg-gray-100 transition">
+                Download Text (.txt)
               </button>
             </div>
 
@@ -650,7 +684,18 @@
                 <p class="text-xs text-[var(--ink-soft)] mb-4">Export all asked questions, AI answers, and source page citations.</p>
               </div>
               <button id="download-chat-btn" class="w-full text-[var(--ink)] border border-[var(--line)] bg-white font-bold text-xs py-2.5 rounded-xl hover:bg-gray-100 transition">
-                Download Transcript
+                Download Transcript (.md)
+              </button>
+            </div>
+
+            <div class="bg-[var(--bg)] border border-[var(--line)] rounded-2xl p-5 flex flex-col justify-between">
+              <div>
+                <div class="text-2xl mb-2">⚙️</div>
+                <p class="font-bold text-sm mb-1">Structured JSON Data (.json)</p>
+                <p class="text-xs text-[var(--ink-soft)] mb-4">Full document JSON metadata, page-by-page extracted content, and OCR details.</p>
+              </div>
+              <button id="download-json-btn" class="w-full text-purple-700 border border-purple-300 bg-white font-bold text-xs py-2.5 rounded-xl hover:bg-purple-50 transition">
+                Download JSON (.json)
               </button>
             </div>
           </div>
@@ -662,6 +707,69 @@
         <p class="text-[11px] text-[var(--ink-soft)]">DocuMind AI Document Intelligence System • Verified Page Citations</p>
       </div>
     </section>
+
+    <!-- RIGHT SIDEBAR: Original Embedded PDF Viewer -->
+    <aside id="right-pdf-panel" class="space-y-4 flex flex-col">
+      <div class="bg-white border border-[var(--line)] rounded-2xl p-4 card-shadow flex flex-col flex-1 min-h-[620px]">
+        
+        <!-- Viewer Header -->
+        <div class="flex items-center justify-between pb-3 mb-3 border-b border-[var(--line)] gap-2">
+          <div class="flex items-center gap-2 min-w-0">
+            <span class="text-base">📄</span>
+            <div class="min-w-0">
+              <p class="text-xs font-bold uppercase tracking-wider text-[var(--ink-soft)] truncate">Original PDF</p>
+              <span id="pdf-page-indicator" class="text-[11px] font-semibold text-[var(--accent)]">Page 1 of 1</span>
+            </div>
+          </div>
+
+          <!-- Page Controls -->
+          <div class="flex items-center gap-1 shrink-0">
+            <button id="pdf-prev-btn" title="Previous Page" class="w-7 h-7 rounded-lg border border-[var(--line)] flex items-center justify-center text-[var(--ink-soft)] hover:border-[var(--accent)] hover:text-[var(--accent)] transition text-xs font-bold focus-ring">
+              ‹
+            </button>
+            <div class="flex items-center gap-1 text-xs">
+              <input id="pdf-page-input" type="number" min="1" value="1" class="w-11 text-center text-xs font-bold bg-[var(--bg)] border border-[var(--line)] rounded-lg py-1 focus-ring outline-none focus:border-[var(--accent)]">
+            </div>
+            <button id="pdf-next-btn" title="Next Page" class="w-7 h-7 rounded-lg border border-[var(--line)] flex items-center justify-center text-[var(--ink-soft)] hover:border-[var(--accent)] hover:text-[var(--accent)] transition text-xs font-bold focus-ring">
+              ›
+            </button>
+            <button id="pdf-open-tab-btn" title="Open PDF in new tab" class="w-7 h-7 rounded-lg border border-[var(--line)] flex items-center justify-center text-[var(--ink-soft)] hover:border-[var(--accent)] hover:text-[var(--accent)] transition text-xs focus-ring">
+              <svg width="13" height="13" viewBox="0 0 24 24" fill="none"><path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6M15 3h6v6M10 14 21 3" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>
+            </button>
+          </div>
+        </div>
+
+        <!-- Embedded Viewer Container (~40-50% height with scrollbar) -->
+        <div id="pdf-viewer-container" class="relative flex-1 rounded-xl border border-[var(--line)] overflow-y-auto bg-[var(--bg)] min-h-[460px] max-h-[75vh] flex flex-col p-3 space-y-4">
+          <!-- Continuous PDF.js Canvas Render Wrapper -->
+          <div id="pdf-render-wrapper" class="w-full flex flex-col items-center space-y-4"></div>
+          <!-- Fallback iframe for raw PDF viewer -->
+          <iframe id="pdf-viewer-frame" class="hidden w-full h-full flex-1 border-0 rounded-xl bg-white dark:bg-[#0F1613]" src="about:blank" title="Original Document PDF Viewer"></iframe>
+          <div id="image-viewer-container" class="hidden w-full h-full flex-1 overflow-auto flex items-center justify-center p-2 bg-[var(--bg)]">
+            <img id="image-viewer-img" class="max-w-full max-h-full object-contain rounded-lg card-shadow" alt="Uploaded Document Page">
+          </div>
+        </div>
+
+        <!-- Status footer -->
+        <div class="mt-3 flex items-center justify-between text-[11px] text-[var(--ink-soft)]">
+          <span id="pdf-viewer-status">Original View</span>
+          <span class="text-[var(--accent)] font-semibold">Interactive Scroll &amp; Jump</span>
+        </div>
+      </div>
+
+      <!-- HISTORY / PREVIOUS SEARCHES PANEL -->
+      <div id="workspace-history-panel" class="bg-white border border-[var(--line)] rounded-2xl p-4 card-shadow flex flex-col shrink-0">
+        <div class="flex items-center justify-between pb-2.5 mb-2.5 border-b border-[var(--line)]">
+          <div class="flex items-center gap-2 min-w-0">
+            <span class="text-sm">🕒</span>
+            <p class="text-xs font-bold uppercase tracking-wider text-[var(--ink-soft)] truncate">History / Previous Searches</p>
+          </div>
+          <span id="workspace-history-count" class="text-[10px] font-bold px-2 py-0.5 rounded-full bg-[var(--accent-soft)] text-[var(--accent)] shrink-0">0 sessions</span>
+        </div>
+
+        <div id="workspace-history-list" class="space-y-2 max-h-[240px] overflow-y-auto pr-1"></div>
+      </div>
+    </aside>
 
   </main>
 </div>
@@ -755,7 +863,13 @@
 
   let TOTAL_PAGES = 0;
   let ACTIVE_PAGE = 1;
+  let PDF_CURRENT_PAGE = 1;
   let CURRENT_DOC_DATA = null;
+  let PDFJS_DOC = null;
+
+  if (window.pdfjsLib) {
+    pdfjsLib.GlobalWorkerOptions.workerSrc = 'https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.worker.min.js';
+  }
 
   const DOC_STORAGE_KEY = 'documind_currentDocument';
   const QA_STORAGE_KEY_PREFIX = 'documind_qaHistory_';
@@ -795,7 +909,7 @@
 
   // ---- Tabs Controller ----
   document.querySelectorAll('.nav-tab').forEach((tabBtn) => {
-    tabBtn.addEventListener('click', () => {
+    tabBtn.addEventListener('click', async () => {
       document.querySelectorAll('.nav-tab').forEach(b => b.classList.remove('active'));
       document.querySelectorAll('.tab-panel').forEach(p => p.classList.remove('active'));
 
@@ -803,6 +917,25 @@
       const targetId = tabBtn.dataset.tab;
       const targetPanel = document.getElementById(targetId);
       if (targetPanel) targetPanel.classList.add('active');
+
+      if (!window.currentDocument) return;
+
+      if (targetId === 'tab-summary') {
+        const execEl = document.getElementById('summary-exec');
+        if (!execEl || !execEl.textContent.trim() || document.getElementById('summary-content').classList.contains('hidden')) {
+          await fetchSummary();
+        }
+      } else if (targetId === 'tab-keywords') {
+        const kwTopics = document.getElementById('kw-topics');
+        if (!kwTopics || !kwTopics.children.length || document.getElementById('keywords-content').classList.contains('hidden')) {
+          await fetchKeywords();
+        }
+      } else if (targetId === 'tab-inspector') {
+        loadInspectorPages();
+        renderInspectorPage(ACTIVE_PAGE || 1);
+      } else if (targetId === 'tab-compare') {
+        await loadDocumentList();
+      }
     });
   });
 
@@ -835,6 +968,134 @@
     } catch (e) { console.error('Failed to load doc list:', e); }
   }
 
+  // ---- Document History Controller ----
+  let CACHED_DOCUMENTS = [];
+
+  async function renderHistoryList() {
+    const landingList = document.getElementById('landing-history-list');
+    const landingEmpty = document.getElementById('landing-history-empty');
+    const landingCount = document.getElementById('landing-history-count');
+    const workspaceList = document.getElementById('workspace-history-list');
+    const workspaceCount = document.getElementById('workspace-history-count');
+
+    try {
+      const res = await fetch(`${API_BASE}/documents`);
+      const data = await res.json();
+      if (data.success && data.documents) {
+        CACHED_DOCUMENTS = data.documents;
+      }
+    } catch (e) {
+      console.warn('Failed to fetch document list for history:', e);
+    }
+
+    const docs = CACHED_DOCUMENTS || [];
+
+    if (landingCount) landingCount.textContent = `${docs.length} session${docs.length === 1 ? '' : 's'}`;
+    if (workspaceCount) workspaceCount.textContent = `${docs.length} session${docs.length === 1 ? '' : 's'}`;
+
+    if (landingEmpty) {
+      if (docs.length === 0) landingEmpty.classList.remove('hidden');
+      else landingEmpty.classList.add('hidden');
+    }
+
+    // Render Landing History List
+    if (landingList) {
+      landingList.innerHTML = '';
+      docs.forEach(doc => {
+        const qaKey = getQAKey(doc.document_id);
+        let qaList = [];
+        try {
+          const raw = localStorage.getItem(qaKey);
+          if (raw) qaList = JSON.parse(raw);
+        } catch (err) {}
+
+        const qaCount = qaList.length;
+        const lastQA = qaCount > 0 ? qaList[qaCount - 1] : null;
+        const sizeMB = (doc.size || 0) / (1024 * 1024);
+        const sizeText = sizeMB < 0.1 ? Math.max(1, Math.round((doc.size || 0) / 1024)) + ' KB' : sizeMB.toFixed(1) + ' MB';
+
+        const card = document.createElement('div');
+        card.className = 'bg-white border border-[var(--line)] rounded-2xl p-4 card-shadow hover:border-[var(--accent)] hover:shadow-md transition cursor-pointer flex flex-col justify-between group';
+        card.innerHTML = `
+          <div>
+            <div class="flex items-center justify-between mb-2">
+              <span class="inline-flex items-center gap-1.5 text-xs font-bold text-[var(--accent)] bg-[var(--accent-soft)] px-2.5 py-1 rounded-lg truncate max-w-[70%]">
+                📄 ${doc.filename}
+              </span>
+              <span class="text-[11px] font-semibold text-[var(--ink-soft)]">
+                ${doc.pages || 1}p • ${sizeText}
+              </span>
+            </div>
+            <p class="text-xs text-[var(--ink)] font-semibold line-clamp-2 mb-2">
+              ${lastQA ? 'Q: ' + lastQA.question : 'No questions asked yet in this session.'}
+            </p>
+          </div>
+          <div class="pt-2 border-t border-[var(--line)] flex items-center justify-between text-[11px] mt-2">
+            <span class="font-bold text-[var(--accent)] bg-[var(--accent-soft)] px-2 py-0.5 rounded-full">
+              💬 ${qaCount} search${qaCount === 1 ? '' : 'es'}
+            </span>
+            <span class="text-[var(--accent)] font-bold group-hover:translate-x-1 transition-transform inline-flex items-center gap-1">
+              Resume Session →
+            </span>
+          </div>
+        `;
+        card.addEventListener('click', () => openSessionFromHistory(doc.document_id));
+        landingList.appendChild(card);
+      });
+    }
+
+    // Render Workspace Right Sidebar History List
+    if (workspaceList) {
+      workspaceList.innerHTML = '';
+      if (docs.length === 0) {
+        workspaceList.innerHTML = '<div class="text-xs text-[var(--ink-soft)] py-3 text-center">No previous sessions yet.</div>';
+      } else {
+        docs.forEach(doc => {
+          const qaKey = getQAKey(doc.document_id);
+          let qaList = [];
+          try {
+            const raw = localStorage.getItem(qaKey);
+            if (raw) qaList = JSON.parse(raw);
+          } catch (err) {}
+
+          const qaCount = qaList.length;
+          const isActive = window.currentDocument && window.currentDocument.documentId === doc.document_id;
+          const lastQA = qaCount > 0 ? qaList[qaCount - 1] : null;
+
+          const item = document.createElement('button');
+          item.type = 'button';
+          item.className = `w-full text-left p-2.5 rounded-xl border transition flex flex-col gap-1 ${
+            isActive
+              ? 'bg-[var(--accent-soft)] border-[var(--accent)] shadow-sm'
+              : 'bg-[var(--bg)] border-[var(--line)] hover:border-[var(--accent-soft-2)] hover:bg-white'
+          }`;
+
+          item.innerHTML = `
+            <div class="flex items-center justify-between w-full">
+              <span class="text-xs font-bold truncate max-w-[70%] ${isActive ? 'text-[var(--accent)]' : 'text-[var(--ink)]'}">
+                📄 ${doc.filename}
+              </span>
+              <span class="text-[10px] font-bold px-1.5 py-0.5 rounded-full ${isActive ? 'bg-[var(--accent)] text-white' : 'bg-gray-200 dark:bg-gray-800 text-[var(--ink-soft)]'}">
+                ${qaCount} Q&amp;A
+              </span>
+            </div>
+            ${lastQA ? `<p class="text-[11px] text-[var(--ink-soft)] truncate w-full">Q: ${lastQA.question}</p>` : `<p class="text-[11px] text-gray-400 italic">Fresh document session</p>`}
+          `;
+
+          item.addEventListener('click', () => openSessionFromHistory(doc.document_id));
+          workspaceList.appendChild(item);
+        });
+      }
+    }
+  }
+
+  async function openSessionFromHistory(docId) {
+    uploadView.style.display = 'none';
+    workspaceView.style.display = 'flex';
+    window.scrollTo({ top: 0, behavior: 'smooth' });
+    await switchDocument(docId);
+  }
+
   docSelector.addEventListener('change', async (e) => {
     const docId = e.target.value;
     if (docId) switchDocument(docId);
@@ -862,8 +1123,30 @@
       localStorage.setItem(DOC_STORAGE_KEY, JSON.stringify(window.currentDocument));
       TOTAL_PAGES = doc.pages || 1;
       updateDocumentUI();
+
+      // Reset loaded state for tabs
+      const summaryContent = document.getElementById('summary-content');
+      if (summaryContent) summaryContent.classList.add('hidden');
+      const summaryExec = document.getElementById('summary-exec');
+      if (summaryExec) summaryExec.textContent = '';
+
+      const keywordsContent = document.getElementById('keywords-content');
+      if (keywordsContent) keywordsContent.classList.add('hidden');
+      const kwTopics = document.getElementById('kw-topics');
+      if (kwTopics) kwTopics.innerHTML = '';
+
+      renderPdfDocument(doc.document_id);
       loadQAHistoryForDoc(doc.document_id);
       loadInspectorPages();
+      renderHistoryList();
+
+      // Auto fetch if summary or keywords tab active
+      const activeTab = document.querySelector('.nav-tab.active');
+      if (activeTab) {
+        const tId = activeTab.dataset.tab;
+        if (tId === 'tab-summary') fetchSummary();
+        else if (tId === 'tab-keywords') fetchKeywords();
+      }
 
     } catch (e) {
       alert('Error switching document: ' + e.message);
@@ -898,7 +1181,121 @@
     pageCountLabel.textContent = filter ? `${count} of ${TOTAL_PAGES} pages` : `${TOTAL_PAGES} pages in total`;
   }
 
-  function highlightPage(pageNum) {
+  async function renderPdfDocument(docId) {
+    const renderWrapper = document.getElementById('pdf-render-wrapper');
+    const pdfFrame = document.getElementById('pdf-viewer-frame');
+    const imgContainer = document.getElementById('image-viewer-container');
+
+    if (!renderWrapper) return;
+    renderWrapper.innerHTML = '<div class="text-xs text-[var(--ink-soft)] font-semibold p-4">Loading original PDF pages...</div>';
+
+    const ext = (CURRENT_DOC_DATA && CURRENT_DOC_DATA.extension) ? CURRENT_DOC_DATA.extension.toLowerCase() : 'pdf';
+
+    if (ext !== 'pdf' && ext.match(/(png|jpg|jpeg)$/i)) {
+      renderWrapper.innerHTML = '';
+      if (pdfFrame) pdfFrame.classList.add('hidden');
+      if (imgContainer) imgContainer.classList.remove('hidden');
+      const img = document.getElementById('image-viewer-img');
+      if (img) img.src = `${API_BASE}/file/${docId}`;
+      return;
+    }
+
+    if (imgContainer) imgContainer.classList.add('hidden');
+
+    try {
+      if (!window.pdfjsLib) throw new Error('PDF.js not loaded');
+
+      const pdfUrl = `${API_BASE}/file/${docId}`;
+      const loadingTask = pdfjsLib.getDocument(pdfUrl);
+      PDFJS_DOC = await loadingTask.promise;
+
+      renderWrapper.innerHTML = '';
+
+      for (let i = 1; i <= PDFJS_DOC.numPages; i++) {
+        const page = await PDFJS_DOC.getPage(i);
+
+        const pageWrapper = document.createElement('div');
+        pageWrapper.id = `pdf-page-wrapper-${i}`;
+        pageWrapper.dataset.page = String(i);
+        pageWrapper.className = 'w-full flex flex-col items-center bg-white dark:bg-[#0F1613] rounded-xl border border-[var(--line)] shadow-sm p-2 transition hover:shadow-md';
+
+        const label = document.createElement('div');
+        label.className = 'w-full text-left text-[10px] font-bold text-[var(--ink-soft)] mb-1 px-1 flex items-center justify-between border-b border-[var(--line)] pb-1';
+        label.innerHTML = `<span>Page ${i}</span><span class="text-[var(--accent)] font-semibold">Original PDF</span>`;
+        pageWrapper.appendChild(label);
+
+        const canvas = document.createElement('canvas');
+        canvas.id = `pdf-page-canvas-${i}`;
+        canvas.className = 'w-full max-w-full h-auto rounded-lg';
+        pageWrapper.appendChild(canvas);
+
+        renderWrapper.appendChild(pageWrapper);
+
+        const viewport = page.getViewport({ scale: 1.3 });
+        const outputScale = window.devicePixelRatio || 1;
+
+        canvas.width = Math.floor(viewport.width * outputScale);
+        canvas.height = Math.floor(viewport.height * outputScale);
+        canvas.style.width = '100%';
+        canvas.style.height = 'auto';
+
+        const transform = outputScale !== 1 ? [outputScale, 0, 0, outputScale, 0, 0] : null;
+
+        const renderContext = {
+          canvasContext: canvas.getContext('2d'),
+          transform: transform,
+          viewport: viewport
+        };
+        await page.render(renderContext).promise;
+      }
+
+      if (pdfFrame) pdfFrame.classList.add('hidden');
+      setTimeout(() => jumpToPdfPage(1), 100);
+
+    } catch (e) {
+      console.warn('PDF.js rendering fallback to iframe:', e);
+      renderWrapper.innerHTML = '';
+      if (pdfFrame) {
+        pdfFrame.classList.remove('hidden');
+        pdfFrame.src = `${API_BASE}/file/${docId}#page=1`;
+      }
+    }
+  }
+
+  function jumpToPdfPage(pageNum, options = {}) {
+    if (!pageNum) return;
+    const targetPage = Math.max(1, Math.min(Number(pageNum), TOTAL_PAGES || 1));
+    PDF_CURRENT_PAGE = targetPage;
+
+    const indicator = document.getElementById('pdf-page-indicator');
+    if (indicator) indicator.textContent = `Page ${targetPage} of ${TOTAL_PAGES || 1}`;
+
+    const pageInput = document.getElementById('pdf-page-input');
+    if (pageInput) pageInput.value = targetPage;
+
+    if (!window.currentDocument || !window.currentDocument.documentId) return;
+
+    const container = document.getElementById('pdf-viewer-container');
+    const targetEl = document.getElementById(`pdf-page-wrapper-${targetPage}`) || document.getElementById(`pdf-page-canvas-${targetPage}`);
+
+    if (container && targetEl) {
+      const containerTop = container.getBoundingClientRect().top;
+      const targetTop = targetEl.getBoundingClientRect().top;
+      const relativeTop = targetTop - containerTop;
+
+      container.scrollTo({
+        top: container.scrollTop + relativeTop - 8,
+        behavior: 'smooth'
+      });
+    } else {
+      const pdfFrame = document.getElementById('pdf-viewer-frame');
+      if (pdfFrame && pdfFrame.classList.contains('hidden') === false) {
+        pdfFrame.src = `${API_BASE}/file/${window.currentDocument.documentId}#page=${targetPage}`;
+      }
+    }
+  }
+
+  function highlightPage(pageNum, options = {}) {
     ACTIVE_PAGE = Number(pageNum);
     document.querySelectorAll('.page-row').forEach(r => {
       r.classList.toggle('active', Number(r.dataset.page) === ACTIVE_PAGE);
@@ -911,6 +1308,10 @@
     if (inspectorSelect) {
       inspectorSelect.value = String(pageNum);
       renderInspectorPage(pageNum);
+    }
+
+    if (!options || !options.skipPdfJump) {
+      jumpToPdfPage(pageNum);
     }
   }
 
@@ -951,6 +1352,7 @@
       localStorage.setItem(key, JSON.stringify(list));
       qaToolbar.classList.remove('hidden');
       qaCountBadge.textContent = `${list.length} question(s) answered`;
+      renderHistoryList();
     } catch (e) { console.error('Failed to save QA item:', e); }
   }
 
@@ -1006,6 +1408,15 @@
     qaLoading.classList.remove('hidden');
     qaInput.value = '';
 
+    // Check if prompt explicitly requests a page (e.g. "Tell me about page 5", "page 5", "p. 5")
+    const pageMatch = q.match(/\b(?:page|p\.?)\s*#?\s*(\d+)\b/i);
+    if (pageMatch && pageMatch[1]) {
+      const explicitPage = parseInt(pageMatch[1], 10);
+      if (explicitPage >= 1 && (explicitPage <= TOTAL_PAGES || TOTAL_PAGES === 0)) {
+        highlightPage(explicitPage);
+      }
+    }
+
     try {
       const res = await fetch(`${API_BASE}/qa`, {
         method: 'POST',
@@ -1031,6 +1442,11 @@
 
       appendQAItem(entry);
       pushQAHistoryForDoc(window.currentDocument.documentId, entry);
+
+      const primaryPage = (data.pages && data.pages.length) ? data.pages[0] : data.page;
+      if (primaryPage) {
+        highlightPage(primaryPage);
+      }
 
     } catch (err) {
       qaLoading.classList.add('hidden');
@@ -1072,12 +1488,61 @@
     }
   });
 
-  clearChatBtn.addEventListener('click', () => {
+  function clearAllDocumentData() {
     if (!window.currentDocument) return;
+
+    // 1. Clear Q&A Chat & LocalStorage
     localStorage.removeItem(getQAKey(window.currentDocument.documentId));
     qaHistory.innerHTML = '';
     qaEmpty.classList.remove('hidden');
     qaToolbar.classList.add('hidden');
+    qaInput.value = '';
+
+    // 2. Clear AI Summary
+    const summaryContent = document.getElementById('summary-content');
+    if (summaryContent) summaryContent.classList.add('hidden');
+    const summaryExec = document.getElementById('summary-exec');
+    if (summaryExec) summaryExec.textContent = '';
+    const summaryTakeaways = document.getElementById('summary-takeaways');
+    if (summaryTakeaways) summaryTakeaways.innerHTML = '';
+    const summaryMetrics = document.getElementById('summary-metrics');
+    if (summaryMetrics) summaryMetrics.innerHTML = '';
+    const summaryActions = document.getElementById('summary-actions');
+    if (summaryActions) summaryActions.innerHTML = '';
+
+    // 3. Clear Keywords & Entities
+    const keywordsContent = document.getElementById('keywords-content');
+    if (keywordsContent) keywordsContent.classList.add('hidden');
+    const kwTopics = document.getElementById('kw-topics');
+    if (kwTopics) kwTopics.innerHTML = '';
+    const kwEntities = document.getElementById('kw-entities');
+    if (kwEntities) kwEntities.innerHTML = '';
+    const kwReqs = document.getElementById('kw-reqs');
+    if (kwReqs) kwReqs.innerHTML = '';
+    const kwFreq = document.getElementById('kw-freq');
+    if (kwFreq) kwFreq.innerHTML = '';
+
+    // 4. Clear Document Compare Results
+    const compareResults = document.getElementById('compare-results');
+    if (compareResults) compareResults.classList.add('hidden');
+    const compOverview = document.getElementById('comp-overview');
+    if (compOverview) compOverview.textContent = '';
+    const compSimilarities = document.getElementById('comp-similarities');
+    if (compSimilarities) compSimilarities.innerHTML = '';
+    const compDifferences = document.getElementById('comp-differences');
+    if (compDifferences) compDifferences.innerHTML = '';
+    const compRecommendation = document.getElementById('comp-recommendation');
+    if (compRecommendation) compRecommendation.textContent = '';
+
+    // 5. Clear Left Sidebar Filter & Jump to Page 1
+    if (pageSearch) pageSearch.value = '';
+    renderPages('');
+    highlightPage(1);
+    renderHistoryList();
+  }
+
+  clearChatBtn.addEventListener('click', () => {
+    clearAllDocumentData();
   });
 
   exportChatBtn.addEventListener('click', () => {
@@ -1100,11 +1565,12 @@
   });
 
   // ---- AI Summarizer ----
-  document.getElementById('generate-summary-btn').addEventListener('click', async () => {
+  async function fetchSummary() {
     if (!window.currentDocument) return;
     const loader = document.getElementById('summary-loading');
     const content = document.getElementById('summary-content');
 
+    if (!loader || !content) return;
     loader.classList.remove('hidden'); content.classList.add('hidden');
 
     try {
@@ -1134,14 +1600,17 @@
     } finally {
       loader.classList.add('hidden');
     }
-  });
+  }
+
+  document.getElementById('generate-summary-btn').addEventListener('click', fetchSummary);
 
   // ---- Keywords Extractor ----
-  document.getElementById('extract-keywords-btn').addEventListener('click', async () => {
+  async function fetchKeywords() {
     if (!window.currentDocument) return;
     const loader = document.getElementById('keywords-loading');
     const content = document.getElementById('keywords-content');
 
+    if (!loader || !content) return;
     loader.classList.remove('hidden'); content.classList.add('hidden');
 
     try {
@@ -1180,11 +1649,14 @@
     } finally {
       loader.classList.add('hidden');
     }
-  });
+  }
+
+  document.getElementById('extract-keywords-btn').addEventListener('click', fetchKeywords);
 
   // ---- Page Inspector ----
   function loadInspectorPages() {
     const select = document.getElementById('inspector-page-select');
+    if (!select) return;
     select.innerHTML = '';
     for (let i = 1; i <= TOTAL_PAGES; i++) {
       const opt = document.createElement('option');
@@ -1192,8 +1664,8 @@
       opt.textContent = `Page ${i}`;
       select.appendChild(opt);
     }
-    select.value = 1;
-    renderInspectorPage(1);
+    select.value = ACTIVE_PAGE || 1;
+    renderInspectorPage(ACTIVE_PAGE || 1);
   }
 
   document.getElementById('inspector-page-select').addEventListener('change', (e) => {
@@ -1205,8 +1677,14 @@
     const content = CURRENT_DOC_DATA.content || [];
     const pData = content.find(p => Number(p.page) === Number(pageNum)) || content[pageNum - 1] || {};
     
-    document.getElementById('inspector-meta').textContent = `Page ${pageNum} Text (${pData.extraction_method || 'native'})`;
-    document.getElementById('inspector-text-view').textContent = pData.text || 'No text extracted for this page.';
+    const txt = pData.text || 'No text extracted for this page.';
+    const method = pData.extraction_method || 'native text';
+    const words = txt.trim() ? txt.trim().split(/\s+/).length : 0;
+    const chars = txt.length;
+
+    document.getElementById('inspector-meta').textContent = `Page ${pageNum} of ${TOTAL_PAGES} • ${words} words • ${chars} characters`;
+    document.getElementById('inspector-quality').textContent = `Method: ${method.toUpperCase()}`;
+    document.getElementById('inspector-text-view').textContent = txt;
   }
 
   document.getElementById('copy-page-text-btn').addEventListener('click', async () => {
@@ -1257,6 +1735,20 @@
     if (!window.currentDocument) return;
     window.location.href = `${API_BASE}/report/${window.currentDocument.documentId}?format=html`;
   });
+  const txtBtn = document.getElementById('download-txt-btn');
+  if (txtBtn) {
+    txtBtn.addEventListener('click', () => {
+      if (!window.currentDocument) return;
+      window.location.href = `${API_BASE}/report/${window.currentDocument.documentId}?format=txt`;
+    });
+  }
+  const jsonBtn = document.getElementById('download-json-btn');
+  if (jsonBtn) {
+    jsonBtn.addEventListener('click', () => {
+      if (!window.currentDocument) return;
+      window.location.href = `${API_BASE}/report/${window.currentDocument.documentId}?format=json`;
+    });
+  }
   document.getElementById('download-chat-btn').addEventListener('click', () => {
     exportChatBtn.click();
   });
@@ -1319,6 +1811,7 @@
     uploadView.style.display = 'flex';
     fileInput.value = '';
     window.scrollTo({ top: 0 });
+    renderHistoryList();
   }
 
   uploadAnother.addEventListener('click', goToUpload);
@@ -1328,21 +1821,90 @@
     btn.addEventListener('click', () => { window.location.href = 'how-it-works.html'; });
   });
 
-  // ---- Restore Session on Load ----
+  // PDF Panel Control Listeners
+  const pdfPrevBtn = document.getElementById('pdf-prev-btn');
+  const pdfNextBtn = document.getElementById('pdf-next-btn');
+  const pdfPageInput = document.getElementById('pdf-page-input');
+  const pdfOpenTabBtn = document.getElementById('pdf-open-tab-btn');
+
+  if (pdfPrevBtn) {
+    pdfPrevBtn.addEventListener('click', () => {
+      if (PDF_CURRENT_PAGE > 1) {
+        highlightPage(PDF_CURRENT_PAGE - 1);
+      }
+    });
+  }
+
+  if (pdfNextBtn) {
+    pdfNextBtn.addEventListener('click', () => {
+      if (PDF_CURRENT_PAGE < TOTAL_PAGES) {
+        highlightPage(PDF_CURRENT_PAGE + 1);
+      }
+    });
+  }
+
+  if (pdfPageInput) {
+    pdfPageInput.addEventListener('change', (e) => {
+      const val = parseInt(e.target.value, 10);
+      if (val >= 1 && val <= TOTAL_PAGES) {
+        highlightPage(val);
+      } else {
+        e.target.value = PDF_CURRENT_PAGE;
+      }
+    });
+  }
+
+  if (pdfOpenTabBtn) {
+    pdfOpenTabBtn.addEventListener('click', () => {
+      if (window.currentDocument && window.currentDocument.documentId) {
+        window.open(`${API_BASE}/file/${window.currentDocument.documentId}#page=${PDF_CURRENT_PAGE}`, '_blank');
+      }
+    });
+  }
+
+  // Scroll tracking inside PDF viewer container
+  const pdfContainer = document.getElementById('pdf-viewer-container');
+  if (pdfContainer) {
+    let scrollTimeout;
+    pdfContainer.addEventListener('scroll', () => {
+      clearTimeout(scrollTimeout);
+      scrollTimeout = setTimeout(() => {
+        const wrappers = document.querySelectorAll('[id^="pdf-page-wrapper-"]');
+        if (!wrappers.length) return;
+
+        const containerTop = pdfContainer.getBoundingClientRect().top;
+        let closestPage = PDF_CURRENT_PAGE;
+        let minDiff = Infinity;
+
+        wrappers.forEach(wrap => {
+          const wrapTop = wrap.getBoundingClientRect().top;
+          const diff = Math.abs(wrapTop - containerTop - 15);
+          if (diff < minDiff) {
+            minDiff = diff;
+            closestPage = Number(wrap.dataset.page);
+          }
+        });
+
+        if (closestPage && closestPage !== PDF_CURRENT_PAGE) {
+          PDF_CURRENT_PAGE = closestPage;
+          const indicator = document.getElementById('pdf-page-indicator');
+          if (indicator) indicator.textContent = `Page ${closestPage} of ${TOTAL_PAGES || 1}`;
+          const pageInput = document.getElementById('pdf-page-input');
+          if (pageInput) pageInput.value = closestPage;
+
+          ACTIVE_PAGE = closestPage;
+          document.querySelectorAll('.page-row').forEach(r => {
+            r.classList.toggle('active', Number(r.dataset.page) === ACTIVE_PAGE);
+          });
+        }
+      }, 50);
+    });
+  }
+
+  // ---- Fresh Tab on Load & Restore History ----
   async function init() {
     await loadDocumentList();
-    const saved = localStorage.getItem(DOC_STORAGE_KEY);
-    if (saved) {
-      try {
-        const doc = JSON.parse(saved);
-        if (doc && doc.documentId) {
-          uploadView.style.display = 'none';
-          workspaceView.style.display = 'flex';
-          await switchDocument(doc.documentId);
-          return;
-        }
-      } catch (e) { localStorage.removeItem(DOC_STORAGE_KEY); }
-    }
+    await renderHistoryList();
     uploadView.style.display = 'flex';
     workspaceView.style.display = 'none';
   }

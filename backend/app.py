@@ -859,6 +859,13 @@ hr {{ border: none; border-top: 1px solid #dce6e1; margin: 30px 0; }}
                 headers={"Content-Disposition": f"attachment;filename=DocuMind_Report_{document_id}.txt"}
             )
 
+        elif fmt == "json":
+            return Response(
+                json.dumps(doc, indent=2, ensure_ascii=False),
+                mimetype="application/json",
+                headers={"Content-Disposition": f"attachment;filename=DocuMind_Data_{document_id}.json"}
+            )
+
         else:
             return Response(
                 report_md,
@@ -941,6 +948,42 @@ def get_cleaned_document(document_id):
         })
     except Exception as e:
         return jsonify({"success": False, "error": str(e)}), 500
+
+
+@app.route("/api/file/<document_id>", methods=["GET"])
+def get_original_file(document_id):
+    document_file = os.path.join(DOCUMENT_FOLDER, f"{document_id}.json")
+    if not os.path.exists(document_file):
+        return jsonify({"success": False, "error": "Document metadata not found"}), 404
+
+    try:
+        with open(document_file, "r", encoding="utf-8") as f:
+            doc = json.load(f)
+
+        ext = doc.get("extension", "pdf").lower()
+        uploaded_filename = f"{document_id}.{ext}"
+        file_path = os.path.join(UPLOAD_FOLDER, uploaded_filename)
+
+        if not os.path.exists(file_path):
+            return jsonify({"success": False, "error": "Original file not found"}), 404
+
+        mime_types = {
+            "pdf": "application/pdf",
+            "png": "image/png",
+            "jpg": "image/jpeg",
+            "jpeg": "image/jpeg"
+        }
+        mimetype = mime_types.get(ext, "application/octet-stream")
+
+        return send_file(
+            file_path,
+            mimetype=mimetype,
+            as_attachment=False,
+            download_name=doc.get("filename", uploaded_filename)
+        )
+    except Exception as e:
+        return jsonify({"success": False, "error": str(e)}), 500
+
 
 
 # ---------------------------------------
