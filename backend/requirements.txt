@@ -4,3 +4,4 @@ python-dotenv
 PyMuPDF
 pytesseract
 Pillow
+gunicorn
