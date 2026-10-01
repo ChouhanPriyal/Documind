@@ -189,31 +189,78 @@
 
     /* Workspace Navigation Tabs */
     .nav-tab {
-      padding: 0.6rem 1rem;
-      font-size: 0.875rem;
+      padding: 0.55rem 0.95rem;
+      font-size: 0.8125rem;
       font-weight: 600;
       color: var(--ink-soft);
       border-bottom: 2px solid transparent;
-      transition: all 0.2s ease;
+      transition: all 0.18s ease;
+      white-space: nowrap;
+      border-radius: 0.5rem 0.5rem 0 0;
+      display: inline-flex;
+      align-items: center;
+      gap: 0.4rem;
     }
 
     .nav-tab:hover {
       color: var(--accent);
+      background: var(--accent-soft);
     }
 
     .nav-tab.active {
       color: var(--accent);
       border-bottom-color: var(--accent);
       background: var(--accent-soft);
-      border-radius: 0.5rem 0.5rem 0 0;
+      font-weight: 700;
+    }
+
+    /* Workspace Viewport & Dynamic Tab Replacement */
+    #workspace-view {
+      height: 100vh;
+      max-height: 100vh;
+      overflow: hidden;
+      display: flex;
+      flex-direction: column;
     }
 
     .tab-panel {
-      display: none;
+      display: none !important;
     }
 
     .tab-panel.active {
-      display: block;
+      display: flex !important;
+      flex-direction: column;
+      flex: 1 1 0%;
+      min-height: 0;
+      height: 100%;
+      overflow: hidden;
+    }
+
+    /* ChatGPT-style Q&A Bubbles */
+    .user-bubble {
+      background: linear-gradient(135deg, var(--accent) 0%, var(--accent-2) 100%);
+      color: #ffffff;
+      box-shadow: 0 2px 8px -2px rgba(4, 108, 78, 0.3);
+    }
+
+    html[data-theme="dark"] .user-bubble {
+      background: linear-gradient(135deg, #0E9A6C 0%, #046C4E 100%);
+      color: #ffffff;
+      box-shadow: 0 2px 8px -2px rgba(18, 185, 129, 0.25);
+    }
+
+    .ai-bubble {
+      background: var(--bg);
+      border-color: var(--line);
+    }
+
+    html[data-theme="dark"] .ai-bubble {
+      background: #0D1411;
+      border-color: var(--line);
+    }
+
+    .card-shadow-sm {
+      box-shadow: 0 1px 3px rgba(11, 18, 16, 0.04);
     }
   </style>
 </head>
@@ -440,11 +487,12 @@
     </header>
 
     <main
-      class="max-w-[1600px] mx-auto px-6 py-6 grid grid-cols-1 lg:grid-cols-[260px_1fr_420px] xl:grid-cols-[280px_1fr_480px] gap-6 flex-1 w-full">
+      class="flex-1 min-h-0 w-full max-w-[1700px] mx-auto px-4 py-3 grid grid-cols-1 lg:grid-cols-[260px_1fr_420px] xl:grid-cols-[280px_1fr_470px] gap-4 overflow-hidden">
 
       <!-- LEFT SIDEBAR: Document details & page index -->
-      <aside class="space-y-4">
-        <div class="bg-white border border-[var(--line)] rounded-2xl p-4 card-shadow">
+      <aside class="h-full min-h-0 flex flex-col gap-3 overflow-hidden">
+        <!-- Document Details Card -->
+        <div class="bg-white dark:bg-[var(--card)] border border-[var(--line)] rounded-2xl p-4 card-shadow shrink-0">
           <div class="flex items-center justify-between mb-3">
             <p class="text-xs font-bold uppercase tracking-wider text-[var(--ink-soft)]">Document Details</p>
             <span
@@ -464,38 +512,38 @@
             </div>
           </div>
 
-          <button id="upload-another"
-            class="mt-4 w-full text-xs font-bold text-[var(--accent)] border border-[var(--accent-soft-2)] bg-[var(--accent-soft)] hover:bg-[var(--accent-soft-2)] rounded-xl py-2.5 transition inline-flex items-center justify-center gap-1.5 focus-ring">
+          <button id="upload-another" type="button"
+            class="mt-3.5 w-full text-xs font-bold text-[var(--accent)] border border-[var(--accent-soft-2)] bg-[var(--accent-soft)] hover:bg-[var(--accent-soft-2)] rounded-xl py-2 transition inline-flex items-center justify-center gap-1.5 focus-ring">
             + Upload Another Document
           </button>
         </div>
 
         <!-- Page List Sidebar Panel -->
-        <div class="bg-white border border-[var(--line)] rounded-2xl p-4 card-shadow flex flex-col h-[460px]">
+        <div class="bg-white dark:bg-[var(--card)] border border-[var(--line)] rounded-2xl p-4 card-shadow flex-1 min-h-0 flex flex-col overflow-hidden">
           <p class="text-xs font-bold uppercase tracking-wider text-[var(--ink-soft)] mb-1">Document Index</p>
-          <p id="page-count-label" class="text-xs text-[var(--ink-soft)] mb-3">-- pages in total</p>
+          <p id="page-count-label" class="text-xs text-[var(--ink-soft)] mb-2.5">-- pages in total</p>
 
-          <div class="relative mb-2">
+          <div class="relative mb-2 shrink-0">
             <input id="page-search" type="text" placeholder="Filter pages..."
-              class="w-full text-xs bg-[var(--bg)] border border-[var(--line)] rounded-lg pl-8 pr-3 py-2 focus-ring outline-none focus:border-[var(--accent)]">
-            <svg class="absolute left-2.5 top-1/2 -translate-y-1/2 text-gray-400" width="14" height="14"
+              class="w-full text-xs bg-[var(--bg)] border border-[var(--line)] rounded-lg pl-8 pr-3 py-1.5 focus-ring outline-none focus:border-[var(--accent)]">
+            <svg class="absolute left-2.5 top-1/2 -translate-y-1/2 text-gray-400" width="13" height="13"
               viewBox="0 0 24 24" fill="none">
               <circle cx="11" cy="11" r="7" stroke="currentColor" stroke-width="1.8" />
               <path d="m20 20-3.5-3.5" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" />
             </svg>
           </div>
 
-          <div id="page-list" class="overflow-y-auto flex-1 space-y-1 pr-1"></div>
+          <div id="page-list" class="overflow-y-auto flex-1 min-h-0 space-y-1 pr-1"></div>
         </div>
       </aside>
 
-      <!-- MAIN RIGHT WORKSPACE CONTENT: TABBED PANELS -->
+      <!-- CENTER WORKSPACE CONTENT: DYNAMIC SELECTED FEATURE -->
       <section
-        class="bg-white border border-[var(--line)] rounded-2xl card-shadow flex flex-col overflow-hidden min-h-[620px]">
+        class="bg-white dark:bg-[var(--card)] border border-[var(--line)] rounded-2xl card-shadow flex flex-col h-full min-h-0 overflow-hidden">
 
         <!-- WORKSPACE TABS HEADER -->
         <div
-          class="border-b border-[var(--line)] px-4 pt-3 flex items-center gap-1 overflow-x-auto bg-gray-50/50 dark:bg-transparent">
+          class="shrink-0 border-b border-[var(--line)] px-4 pt-2.5 pb-0 flex items-center gap-1 overflow-x-auto bg-gray-50/70 dark:bg-black/20">
           <button class="nav-tab active" data-tab="tab-qa">💬 Q&amp;A Chat</button>
           <button class="nav-tab" data-tab="tab-summary">⚡ AI Summary</button>
           <button class="nav-tab" data-tab="tab-keywords">🏷️ Keywords &amp; Entities</button>
@@ -504,419 +552,423 @@
           <button class="nav-tab" data-tab="tab-reports">📥 Export &amp; Reports</button>
         </div>
 
-        <!-- TAB CONTENT AREA -->
-        <div class="p-6 flex-1 flex flex-col overflow-y-auto">
+        <!-- TAB CONTENT AREA: DYNAMICALLY REPLACES CENTER CONTENT -->
+        <div class="flex-1 min-h-0 relative flex flex-col overflow-hidden">
 
-          <!-- =================================================== -->
-          <!-- TAB 1: Q&A CHAT -->
-          <!-- =================================================== -->
-          <div id="tab-qa" class="tab-panel active flex-1 flex flex-col">
-            <div class="mb-4">
-              <h2 class="font-display font-bold text-lg flex items-center gap-2">
-                <span>Ask anything about your document</span>
-              </h2>
-              <p class="text-xs text-[var(--ink-soft)] mt-0.5">DocuMind searches all pages, synthesizes answers, and
-                cites exact page sources.</p>
-
-              <!-- Suggested Prompt Pills -->
-              <div class="mt-3 flex flex-wrap items-center gap-2">
-                <span class="text-[11px] font-bold text-[var(--ink-soft)] uppercase">Suggested:</span>
-                <button
-                  class="prompt-chip text-xs bg-[var(--accent-soft)] hover:bg-[var(--accent-soft-2)] text-[var(--accent)] px-3 py-1 rounded-full font-semibold transition">
-                  What is the minimum attendance requirement?
+          <!-- TAB 1: Q&A CHAT (ChatGPT Style) -->
+          <div id="tab-qa" class="tab-panel active">
+            <!-- Q&A Subheader -->
+            <div class="shrink-0 px-4 py-2 border-b border-[var(--line)] bg-gray-50/50 dark:bg-black/10 flex items-center justify-between text-xs">
+              <div class="flex items-center gap-2 min-w-0">
+                <span class="font-bold text-[var(--accent)] flex items-center gap-1.5 truncate">
+                  <span class="w-2 h-2 rounded-full bg-[var(--accent)] animate-pulse shrink-0"></span>
+                  Document Q&amp;A Chat
+                </span>
+                <span id="qa-count-badge" class="font-semibold text-[10px] px-2 py-0.5 rounded-full bg-[var(--accent-soft)] text-[var(--accent)] shrink-0">
+                  0 questions answered
+                </span>
+              </div>
+              <div class="flex items-center gap-2 shrink-0">
+                <button id="clear-chat-btn" type="button" class="text-[var(--ink-soft)] hover:text-red-500 transition font-semibold text-xs px-2 py-1 rounded hover:bg-red-50 dark:hover:bg-red-950/30 flex items-center gap-1" title="Clear chat conversation">
+                  <svg width="12" height="12" viewBox="0 0 24 24" fill="none"><path d="M3 6h18M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></svg>
+                  Clear Chat
                 </button>
-                <button
-                  class="prompt-chip text-xs bg-[var(--accent-soft)] hover:bg-[var(--accent-soft-2)] text-[var(--accent)] px-3 py-1 rounded-full font-semibold transition">
-                  Summarize the main rules &amp; regulations
-                </button>
-                <button
-                  class="prompt-chip text-xs bg-[var(--accent-soft)] hover:bg-[var(--accent-soft-2)] text-[var(--accent)] px-3 py-1 rounded-full font-semibold transition">
-                  What are the key deadlines or requirements?
+                <button id="export-chat-btn" type="button" class="text-[var(--ink-soft)] hover:text-[var(--accent)] transition font-semibold text-xs px-2 py-1 rounded hover:bg-[var(--accent-soft)] flex items-center gap-1" title="Export markdown transcript">
+                  <svg width="12" height="12" viewBox="0 0 24 24" fill="none"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4M7 10l5 5 5-5M12 15V3" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>
+                  Export (.md)
                 </button>
               </div>
             </div>
 
-            <!-- Q&A Input Form -->
-            <form id="qa-form" class="flex items-center gap-2 mb-6">
-              <input id="qa-input" type="text" placeholder="e.g. What is the minimum attendance requirement?"
-                class="flex-1 text-sm border border-[var(--line)] rounded-xl px-4 py-3 outline-none focus:border-[var(--accent)] focus-ring bg-[var(--bg)] font-medium">
-              <button type="submit"
-                class="accent-grad text-white px-5 py-3 rounded-xl font-bold text-sm flex items-center gap-2 hover:brightness-105 active:scale-95 transition shadow-sm shrink-0">
-                <span>✨ Ask DocuMind</span>
-                <svg width="16" height="16" viewBox="0 0 24 24" fill="none">
-                  <path d="m3 12 18-8-8 18-2.5-7.5L3 12Z" stroke="white" stroke-width="2" stroke-linejoin="round"
-                    stroke-linecap="round" />
-                </svg>
-              </button>
-            </form>
-
-            <!-- History Action Toolbar -->
-            <div id="qa-toolbar"
-              class="hidden flex items-center justify-between text-xs text-[var(--ink-soft)] pb-3 border-b border-[var(--line)] mb-4">
-              <span id="qa-count-badge" class="font-semibold">0 questions answered</span>
-              <div class="flex items-center gap-3">
-                <button id="clear-chat-btn" class="hover:text-red-500 transition font-semibold">Clear Chat</button>
-                <button id="export-chat-btn" class="hover:text-[var(--accent)] transition font-semibold">Export
-                  Transcript (.md)</button>
-              </div>
-            </div>
-
-            <!-- Q&A Body -->
-            <div id="qa-body" class="flex-1 flex flex-col gap-4">
-              <!-- Empty state -->
-              <div id="qa-empty"
-                class="flex-1 flex flex-col items-center justify-center text-center text-[var(--ink-soft)] py-16">
-                <div
-                  class="w-12 h-12 rounded-full bg-[var(--accent-soft)] flex items-center justify-center mb-3 text-xl">
-                  ❓
+            <!-- Q&A Scrollable Conversation Area -->
+            <div id="qa-scroll-area" class="flex-1 min-h-0 overflow-y-auto p-4 space-y-4">
+              <!-- Empty State with Suggestions -->
+              <div id="qa-empty" class="h-full min-h-[300px] flex flex-col items-center justify-center text-center p-4 max-w-md mx-auto">
+                <div class="w-12 h-12 rounded-2xl accent-grad flex items-center justify-center text-white text-xl shadow-md mb-3">
+                  ✨
                 </div>
-                <p class="text-sm font-semibold">No questions asked yet.</p>
-                <p class="text-xs text-[var(--ink-soft)] mt-1 max-w-sm">Type a question above or click a suggested
-                  prompt to get an AI-grounded answer with source citations.</p>
+                <h3 class="font-display font-bold text-base text-[var(--ink)] mb-1">
+                  Ask anything about this document
+                </h3>
+                <p class="text-xs text-[var(--ink-soft)] max-w-sm mb-5 leading-relaxed">
+                  DocuMind searches all pages, synthesizes answers with Gemini AI, and cites exact page sources.
+                </p>
+
+                <!-- Suggested Questions Grid -->
+                <div class="w-full space-y-2 text-left">
+                  <p class="text-[10px] font-bold text-[var(--ink-soft)] uppercase tracking-wider px-1">Suggested Inquiries</p>
+                  <button type="button" class="prompt-chip w-full text-left p-2.5 rounded-xl border border-[var(--line)] bg-[var(--bg)] hover:bg-[var(--accent-soft)] hover:border-[var(--accent)] transition group text-xs flex items-center justify-between">
+                    <span class="font-medium text-[var(--ink)] group-hover:text-[var(--accent)]">What is the minimum attendance requirement?</span>
+                    <span class="text-[var(--ink-soft)] text-sm group-hover:text-[var(--accent)]">→</span>
+                  </button>
+                  <button type="button" class="prompt-chip w-full text-left p-2.5 rounded-xl border border-[var(--line)] bg-[var(--bg)] hover:bg-[var(--accent-soft)] hover:border-[var(--accent)] transition group text-xs flex items-center justify-between">
+                    <span class="font-medium text-[var(--ink)] group-hover:text-[var(--accent)]">Summarize the main rules &amp; regulations</span>
+                    <span class="text-[var(--ink-soft)] text-sm group-hover:text-[var(--accent)]">→</span>
+                  </button>
+                  <button type="button" class="prompt-chip w-full text-left p-2.5 rounded-xl border border-[var(--line)] bg-[var(--bg)] hover:bg-[var(--accent-soft)] hover:border-[var(--accent)] transition group text-xs flex items-center justify-between">
+                    <span class="font-medium text-[var(--ink)] group-hover:text-[var(--accent)]">What are the key deadlines or requirements?</span>
+                    <span class="text-[var(--ink-soft)] text-sm group-hover:text-[var(--accent)]">→</span>
+                  </button>
+                </div>
               </div>
 
+              <!-- Message History (New questions appear at bottom) -->
+              <div id="qa-history" class="space-y-4"></div>
+
+              <!-- Loading State (AI thinking at bottom on left) -->
+              <div id="qa-loading" class="hidden flex justify-start items-start gap-3 w-full fade-up">
+                <div class="w-8 h-8 rounded-xl accent-grad flex items-center justify-center text-white text-xs font-bold shadow-sm shrink-0">
+                  ✨
+                </div>
+                <div class="bg-[var(--bg)] border border-[var(--line)] rounded-2xl rounded-tl-xs px-4 py-3 shadow-sm flex items-center gap-3">
+                  <div class="flex items-center gap-1">
+                    <span class="w-2 h-2 rounded-full bg-[var(--accent)] animate-bounce"></span>
+                    <span class="w-2 h-2 rounded-full bg-[var(--accent)] animate-bounce [animation-delay:0.2s]"></span>
+                    <span class="w-2 h-2 rounded-full bg-[var(--accent)] animate-bounce [animation-delay:0.4s]"></span>
+                  </div>
+                  <span class="text-xs text-[var(--ink-soft)] font-medium">DocuMind is reading pages and generating response...</span>
+                </div>
+              </div>
+            </div>
+
+            <!-- ChatGPT Bottom Pinned Input Bar -->
+            <div class="shrink-0 p-3 border-t border-[var(--line)] bg-white dark:bg-[var(--card)]">
+              <form id="qa-form" class="relative flex items-center gap-2">
+                <div class="flex-1 flex items-center bg-[var(--bg)] border border-[var(--line)] rounded-2xl px-3.5 py-1.5 focus-within:border-[var(--accent)] focus-within:ring-2 focus-within:ring-[var(--accent)]/20 transition">
+                  <input id="qa-input" type="text" autocomplete="off"
+                    placeholder="Ask anything about this document... (e.g. key deadlines, rules, summary)"
+                    class="w-full bg-transparent text-xs sm:text-sm py-1.5 outline-none text-[var(--ink)] placeholder:text-[var(--ink-soft)]/70 font-medium">
+                </div>
+                <button type="submit" id="qa-submit-btn" title="Send Question"
+                  class="w-10 h-10 rounded-xl accent-grad text-white flex items-center justify-center hover:brightness-105 active:scale-95 transition shadow-sm shrink-0">
+                  <svg width="16" height="16" viewBox="0 0 24 24" fill="none">
+                    <path d="m3 12 18-8-8 18-2.5-7.5L3 12Z" stroke="white" stroke-width="2" stroke-linejoin="round" stroke-linecap="round"/>
+                  </svg>
+                </button>
+              </form>
+              <div class="flex items-center justify-between mt-1 px-1 text-[10px] text-[var(--ink-soft)]">
+                <span>AI answers grounded in document pages</span>
+                <span class="flex items-center gap-1 text-[var(--accent)] font-medium"><span>📄</span> Verified citations</span>
+              </div>
+            </div>
+          </div>
+
+          <!-- TAB 2: AI SUMMARY (Clean Human-Readable Report) -->
+          <div id="tab-summary" class="tab-panel">
+            <div class="shrink-0 px-6 py-3.5 border-b border-[var(--line)] bg-gray-50/50 dark:bg-black/10 flex items-center justify-between gap-4">
+              <div>
+                <h2 class="font-display font-bold text-base text-[var(--ink)] flex items-center gap-2">
+                  <span>⚡ AI Document Summary &amp; Insights</span>
+                </h2>
+                <p class="text-xs text-[var(--ink-soft)] mt-0.5">Comprehensive executive breakdown, key takeaways, and critical numbers.</p>
+              </div>
+              <div class="flex items-center gap-2 shrink-0">
+                <button id="copy-summary-report-btn" type="button"
+                  class="text-xs font-semibold text-[var(--ink-soft)] border border-[var(--line)] hover:border-[var(--accent)] hover:text-[var(--accent)] bg-white dark:bg-[var(--card)] px-3 py-2 rounded-xl transition flex items-center gap-1.5 focus-ring">
+                  <svg width="13" height="13" viewBox="0 0 24 24" fill="none"><rect x="8" y="8" width="12" height="12" rx="2" stroke="currentColor" stroke-width="1.8"/><path d="M16 8V6a2 2 0 0 0-2-2H6a2 2 0 0 0-2 2v8a2 2 0 0 0 2 2h2" stroke="currentColor" stroke-width="1.8"/></svg>
+                  <span>Copy Report</span>
+                </button>
+                <button id="generate-summary-btn" type="button"
+                  class="accent-grad text-white text-xs font-bold px-4 py-2 rounded-xl hover:brightness-105 active:scale-95 transition shadow-sm flex items-center gap-1.5">
+                  <span>✨ Refresh Summary</span>
+                </button>
+              </div>
+            </div>
+
+            <div class="flex-1 min-h-0 overflow-y-auto p-6 space-y-6">
               <!-- Loading state -->
-              <div id="qa-loading"
-                class="hidden flex items-center gap-3 text-sm font-semibold text-[var(--ink-soft)] py-4">
-                <svg class="spin text-[var(--accent)]" width="18" height="18" viewBox="0 0 24 24" fill="none">
+              <div id="summary-loading" class="hidden text-center py-16 text-sm text-[var(--ink-soft)] font-semibold">
+                <svg class="spin text-[var(--accent)] mx-auto mb-3" width="24" height="24" viewBox="0 0 24 24" fill="none">
                   <circle cx="12" cy="12" r="9" stroke="#DCE6E1" stroke-width="3" />
                   <path d="M21 12a9 9 0 0 0-9-9" stroke="currentColor" stroke-width="3" stroke-linecap="round" />
                 </svg>
-                Searching document pages and generating AI response...
+                <p class="font-bold text-[var(--ink)]">Analyzing document structure &amp; synthesizing executive summary...</p>
+                <p class="text-xs text-[var(--ink-soft)] mt-1">Extracting key takeaways, metrics, and compliance guidelines.</p>
               </div>
 
-              <!-- Q&A History List -->
-              <div id="qa-history" class="space-y-6"></div>
-            </div>
-          </div>
-
-          <!-- =================================================== -->
-          <!-- TAB 2: AI SUMMARY -->
-          <!-- =================================================== -->
-          <div id="tab-summary" class="tab-panel">
-            <div class="flex items-center justify-between mb-6">
-              <div>
-                <h2 class="font-display font-bold text-lg">AI Document Summary &amp; Insights</h2>
-                <p class="text-xs text-[var(--ink-soft)]">Comprehensive executive breakdown, key takeaways, critical
-                  numbers, and compliance rules.</p>
-              </div>
-              <button id="generate-summary-btn"
-                class="accent-grad text-white text-xs font-bold px-4 py-2.5 rounded-xl hover:brightness-105 transition shadow-sm">
-                ✨ Generate / Refresh Summary
-              </button>
-            </div>
-
-            <div id="summary-loading" class="hidden text-center py-12 text-sm text-[var(--ink-soft)] font-semibold">
-              <svg class="spin text-[var(--accent)] mx-auto mb-3" width="24" height="24" viewBox="0 0 24 24"
-                fill="none">
-                <circle cx="12" cy="12" r="9" stroke="#DCE6E1" stroke-width="3" />
-                <path d="M21 12a9 9 0 0 0-9-9" stroke="currentColor" stroke-width="3" stroke-linecap="round" />
-              </svg>
-              Analyzing document structure and synthesizing executive summary...
-            </div>
-
-            <div id="summary-content" class="hidden space-y-6">
-              <!-- Executive Summary Card -->
-              <div class="bg-[var(--bg)] border border-[var(--line)] rounded-2xl p-5">
-                <h3
-                  class="font-bold text-sm uppercase tracking-wider text-[var(--accent)] mb-2 flex items-center gap-2">
-                  📜 Executive Summary
-                </h3>
-                <p id="summary-exec" class="text-sm leading-relaxed whitespace-pre-wrap"></p>
-              </div>
-
-              <!-- Grid for Takeaways & Metrics -->
-              <div class="grid grid-cols-1 md:grid-cols-2 gap-5">
-                <!-- Key Takeaways -->
-                <div class="bg-[var(--bg)] border border-[var(--line)] rounded-2xl p-5">
-                  <h3
-                    class="font-bold text-sm uppercase tracking-wider text-[var(--accent)] mb-3 flex items-center gap-2">
-                    🎯 Key Takeaways
-                  </h3>
-                  <ul id="summary-takeaways" class="space-y-2 text-sm"></ul>
+              <!-- Human-Readable Summary Content -->
+              <div id="summary-content" class="hidden space-y-6 fade-up">
+                <!-- Executive Summary -->
+                <div class="bg-[var(--bg)] border border-[var(--line)] rounded-2xl p-5 card-shadow-sm">
+                  <div class="flex items-center justify-between pb-3 mb-3 border-b border-[var(--line)]">
+                    <h3 class="font-bold text-xs uppercase tracking-wider text-[var(--accent)] flex items-center gap-2">
+                      <span>📄 EXECUTIVE SUMMARY</span>
+                    </h3>
+                    <span class="text-[10px] font-bold px-2 py-0.5 rounded-full bg-[var(--accent-soft)] text-[var(--accent)]">Executive Overview</span>
+                  </div>
+                  <div id="summary-exec" class="text-sm leading-relaxed text-[var(--ink)] space-y-3 font-normal"></div>
                 </div>
 
-                <!-- Critical Metrics & Numbers -->
-                <div class="bg-[var(--bg)] border border-[var(--line)] rounded-2xl p-5">
-                  <h3
-                    class="font-bold text-sm uppercase tracking-wider text-[var(--accent)] mb-3 flex items-center gap-2">
-                    📊 Key Metrics &amp; Requirements
-                  </h3>
-                  <ul id="summary-metrics" class="space-y-2 text-sm"></ul>
-                </div>
-              </div>
+                <!-- Grid for Takeaways & Metrics -->
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-5">
+                  <!-- Key Takeaways -->
+                  <div class="bg-[var(--bg)] border border-[var(--line)] rounded-2xl p-5 card-shadow-sm flex flex-col">
+                    <div class="flex items-center justify-between pb-3 mb-3 border-b border-[var(--line)]">
+                      <h3 class="font-bold text-xs uppercase tracking-wider text-[var(--accent)] flex items-center gap-2">
+                        <span>🎯 KEY TAKEAWAYS</span>
+                      </h3>
+                      <span class="text-[10px] font-semibold text-[var(--ink-soft)]">Key Points</span>
+                    </div>
+                    <ul id="summary-takeaways" class="space-y-2 text-xs flex-1"></ul>
+                  </div>
 
-              <!-- Action Items & Compliance -->
-              <div class="bg-[var(--bg)] border border-[var(--line)] rounded-2xl p-5">
-                <h3
-                  class="font-bold text-sm uppercase tracking-wider text-[var(--accent)] mb-3 flex items-center gap-2">
-                  ⚠️ Action Items &amp; Compliance Notes
-                </h3>
-                <ul id="summary-actions" class="space-y-2 text-sm"></ul>
+                  <!-- Critical Metrics & Numbers -->
+                  <div class="bg-[var(--bg)] border border-[var(--line)] rounded-2xl p-5 card-shadow-sm flex flex-col">
+                    <div class="flex items-center justify-between pb-3 mb-3 border-b border-[var(--line)]">
+                      <h3 class="font-bold text-xs uppercase tracking-wider text-blue-600 dark:text-blue-400 flex items-center gap-2">
+                        <span>📊 KEY METRICS &amp; REQUIREMENTS</span>
+                      </h3>
+                      <span class="text-[10px] font-semibold text-[var(--ink-soft)]">Quantitative</span>
+                    </div>
+                    <ul id="summary-metrics" class="space-y-2 text-xs flex-1"></ul>
+                  </div>
+                </div>
+
+                <!-- Action Items & Compliance -->
+                <div class="bg-[var(--bg)] border border-amber-200/70 dark:border-amber-900/40 rounded-2xl p-5 card-shadow-sm">
+                  <div class="flex items-center justify-between pb-3 mb-3 border-b border-[var(--line)]">
+                    <h3 class="font-bold text-xs uppercase tracking-wider text-amber-700 dark:text-amber-400 flex items-center gap-2">
+                      <span>⚠️ ACTION ITEMS &amp; COMPLIANCE NOTES</span>
+                    </h3>
+                    <span class="text-[10px] font-bold px-2 py-0.5 rounded-full bg-amber-100 text-amber-800 dark:bg-amber-900/40 dark:text-amber-300">Rules &amp; Actions</span>
+                  </div>
+                  <ul id="summary-actions" class="space-y-2 text-xs"></ul>
+                </div>
               </div>
             </div>
           </div>
 
-          <!-- =================================================== -->
           <!-- TAB 3: KEYWORDS & ENTITIES -->
-          <!-- =================================================== -->
           <div id="tab-keywords" class="tab-panel">
-            <div class="flex items-center justify-between mb-6">
+            <div class="shrink-0 px-6 py-3.5 border-b border-[var(--line)] bg-gray-50/50 dark:bg-black/10 flex items-center justify-between">
               <div>
-                <h2 class="font-display font-bold text-lg">Keyword &amp; Entity Intelligence</h2>
-                <p class="text-xs text-[var(--ink-soft)]">Categorized topics, regulations, organizations, numbers, and
-                  frequency terms.</p>
+                <h2 class="font-display font-bold text-base text-[var(--ink)]">🏷️ Keyword &amp; Entity Intelligence</h2>
+                <p class="text-xs text-[var(--ink-soft)]">Categorized topics, regulations, organizations, numbers, and frequency terms.</p>
               </div>
-              <button id="extract-keywords-btn"
-                class="accent-grad text-white text-xs font-bold px-4 py-2.5 rounded-xl hover:brightness-105 transition shadow-sm">
+              <button id="extract-keywords-btn" type="button"
+                class="accent-grad text-white text-xs font-bold px-4 py-2 rounded-xl hover:brightness-105 active:scale-95 transition shadow-sm">
                 🏷️ Extract Keywords
               </button>
             </div>
 
-            <div id="keywords-loading" class="hidden text-center py-12 text-sm text-[var(--ink-soft)] font-semibold">
-              <svg class="spin text-[var(--accent)] mx-auto mb-3" width="24" height="24" viewBox="0 0 24 24"
-                fill="none">
-                <circle cx="12" cy="12" r="9" stroke="#DCE6E1" stroke-width="3" />
-                <path d="M21 12a9 9 0 0 0-9-9" stroke="currentColor" stroke-width="3" stroke-linecap="round" />
-              </svg>
-              Extracting entities, topics, and frequency tags...
-            </div>
-
-            <div id="keywords-content" class="hidden space-y-6">
-              <div class="grid grid-cols-1 md:grid-cols-2 gap-5">
-                <!-- Key Topics -->
-                <div class="bg-[var(--bg)] border border-[var(--line)] rounded-2xl p-5">
-                  <h3 class="font-bold text-xs uppercase tracking-wider text-[var(--ink-soft)] mb-3">🏷️ Key Topics
-                    &amp; Domains</h3>
-                  <div id="kw-topics" class="flex flex-wrap gap-2"></div>
-                </div>
-
-                <!-- Named Entities & Regulations -->
-                <div class="bg-[var(--bg)] border border-[var(--line)] rounded-2xl p-5">
-                  <h3 class="font-bold text-xs uppercase tracking-wider text-[var(--ink-soft)] mb-3">🏢 Entities &amp;
-                    Regulations</h3>
-                  <div id="kw-entities" class="flex flex-wrap gap-2"></div>
-                </div>
+            <div class="flex-1 min-h-0 overflow-y-auto p-6 space-y-6">
+              <div id="keywords-loading" class="hidden text-center py-12 text-sm text-[var(--ink-soft)] font-semibold">
+                <svg class="spin text-[var(--accent)] mx-auto mb-3" width="24" height="24" viewBox="0 0 24 24" fill="none">
+                  <circle cx="12" cy="12" r="9" stroke="#DCE6E1" stroke-width="3" />
+                  <path d="M21 12a9 9 0 0 0-9-9" stroke="currentColor" stroke-width="3" stroke-linecap="round" />
+                </svg>
+                Extracting entities, topics, and frequency tags...
               </div>
 
-              <!-- Requirements & Numbers -->
-              <div class="bg-[var(--bg)] border border-[var(--line)] rounded-2xl p-5">
-                <h3 class="font-bold text-xs uppercase tracking-wider text-[var(--ink-soft)] mb-3">🔢 Key Requirements
-                  &amp; Quantities</h3>
-                <div id="kw-reqs" class="flex flex-wrap gap-2"></div>
-              </div>
+              <div id="keywords-content" class="hidden space-y-6 fade-up">
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-5">
+                  <div class="bg-[var(--bg)] border border-[var(--line)] rounded-2xl p-5 card-shadow-sm">
+                    <h3 class="font-bold text-xs uppercase tracking-wider text-[var(--ink-soft)] mb-3">🏷️ Key Topics &amp; Domains</h3>
+                    <div id="kw-topics" class="flex flex-wrap gap-2"></div>
+                  </div>
 
-              <!-- Frequency Keywords -->
-              <div class="bg-[var(--bg)] border border-[var(--line)] rounded-2xl p-5">
-                <h3 class="font-bold text-xs uppercase tracking-wider text-[var(--ink-soft)] mb-3">📈 High-Frequency
-                  Terms</h3>
-                <div id="kw-freq" class="flex flex-wrap gap-2"></div>
+                  <div class="bg-[var(--bg)] border border-[var(--line)] rounded-2xl p-5 card-shadow-sm">
+                    <h3 class="font-bold text-xs uppercase tracking-wider text-[var(--ink-soft)] mb-3">🏢 Entities &amp; Regulations</h3>
+                    <div id="kw-entities" class="flex flex-wrap gap-2"></div>
+                  </div>
+                </div>
+
+                <div class="bg-[var(--bg)] border border-[var(--line)] rounded-2xl p-5 card-shadow-sm">
+                  <h3 class="font-bold text-xs uppercase tracking-wider text-[var(--ink-soft)] mb-3">🔢 Key Requirements &amp; Quantities</h3>
+                  <div id="kw-reqs" class="flex flex-wrap gap-2"></div>
+                </div>
+
+                <div class="bg-[var(--bg)] border border-[var(--line)] rounded-2xl p-5 card-shadow-sm">
+                  <h3 class="font-bold text-xs uppercase tracking-wider text-[var(--ink-soft)] mb-3">📈 High-Frequency Terms</h3>
+                  <div id="kw-freq" class="flex flex-wrap gap-2"></div>
+                </div>
               </div>
             </div>
           </div>
 
-          <!-- =================================================== -->
           <!-- TAB 4: PAGE INSPECTOR -->
-          <!-- =================================================== -->
           <div id="tab-inspector" class="tab-panel">
-            <div class="flex items-center justify-between mb-4">
+            <div class="shrink-0 px-6 py-3.5 border-b border-[var(--line)] bg-gray-50/50 dark:bg-black/10 flex items-center justify-between">
               <div>
-                <h2 class="font-display font-bold text-lg">Page Inspector</h2>
+                <h2 class="font-display font-bold text-base text-[var(--ink)]">🔍 Page Inspector</h2>
                 <p class="text-xs text-[var(--ink-soft)]">Inspect raw and cleaned OCR text page-by-page.</p>
               </div>
 
               <div class="flex items-center gap-3">
                 <select id="inspector-page-select"
-                  class="text-xs font-bold bg-[var(--bg)] border border-[var(--line)] px-3 py-2 rounded-xl focus:outline-none">
+                  class="text-xs font-bold bg-[var(--bg)] border border-[var(--line)] px-3 py-1.5 rounded-xl focus:outline-none cursor-pointer">
                   <option value="1">Page 1</option>
                 </select>
-                <button id="copy-page-text-btn"
-                  class="text-xs font-semibold text-[var(--accent)] border border-[var(--accent-soft-2)] bg-[var(--accent-soft)] px-3 py-2 rounded-xl hover:bg-[var(--accent-soft-2)] transition">
+                <button id="copy-page-text-btn" type="button"
+                  class="text-xs font-semibold text-[var(--accent)] border border-[var(--accent-soft-2)] bg-[var(--accent-soft)] px-3 py-1.5 rounded-xl hover:bg-[var(--accent-soft-2)] transition">
                   📋 Copy Page Text
                 </button>
               </div>
             </div>
 
-            <div
-              class="bg-[var(--bg)] border border-[var(--line)] rounded-2xl p-5 font-mono text-xs leading-relaxed overflow-x-auto min-h-[400px]">
-              <div class="flex items-center justify-between border-b border-[var(--line)] pb-3 mb-3">
-                <span id="inspector-meta" class="font-sans text-xs font-bold text-[var(--ink-soft)]">Page 1 Text</span>
-                <span id="inspector-quality"
-                  class="font-sans text-xs font-semibold text-[var(--good)] bg-[var(--good-soft)] px-2.5 py-0.5 rounded-full">High
-                  Quality OCR</span>
+            <div class="flex-1 min-h-0 overflow-y-auto p-6">
+              <div class="bg-[var(--bg)] border border-[var(--line)] rounded-2xl p-5 font-mono text-xs leading-relaxed overflow-x-auto min-h-[360px]">
+                <div class="flex items-center justify-between border-b border-[var(--line)] pb-3 mb-3">
+                  <span id="inspector-meta" class="font-sans text-xs font-bold text-[var(--ink-soft)]">Page 1 Text</span>
+                  <span id="inspector-quality"
+                    class="font-sans text-xs font-semibold text-[var(--good)] bg-[var(--good-soft)] px-2.5 py-0.5 rounded-full">High Quality OCR</span>
+                </div>
+                <pre id="inspector-text-view" class="whitespace-pre-wrap font-mono text-xs"></pre>
               </div>
-              <pre id="inspector-text-view" class="whitespace-pre-wrap font-mono text-xs"></pre>
             </div>
           </div>
 
-          <!-- =================================================== -->
           <!-- TAB 5: DOCUMENT COMPARE -->
-          <!-- =================================================== -->
           <div id="tab-compare" class="tab-panel">
-            <div class="mb-6">
-              <h2 class="font-display font-bold text-lg">Compare Documents Side-by-Side</h2>
-              <p class="text-xs text-[var(--ink-soft)]">Select two uploaded documents to run AI comparative analysis and
-                highlight differences.</p>
-            </div>
-
-            <div class="grid grid-cols-1 md:grid-cols-2 gap-4 mb-6">
-              <div class="bg-[var(--bg)] border border-[var(--line)] rounded-2xl p-4">
-                <label class="block text-xs font-bold uppercase tracking-wider text-[var(--ink-soft)] mb-2">Document
-                  1</label>
-                <select id="compare-doc-1"
-                  class="w-full text-xs font-bold bg-white border border-[var(--line)] p-2.5 rounded-xl focus:outline-none"></select>
+            <div class="shrink-0 px-6 py-3.5 border-b border-[var(--line)] bg-gray-50/50 dark:bg-black/10 flex items-center justify-between">
+              <div>
+                <h2 class="font-display font-bold text-base text-[var(--ink)]">⚖️ Compare Documents Side-by-Side</h2>
+                <p class="text-xs text-[var(--ink-soft)]">Select two uploaded documents to run AI comparative analysis.</p>
               </div>
-
-              <div class="bg-[var(--bg)] border border-[var(--line)] rounded-2xl p-4">
-                <label class="block text-xs font-bold uppercase tracking-wider text-[var(--ink-soft)] mb-2">Document
-                  2</label>
-                <select id="compare-doc-2"
-                  class="w-full text-xs font-bold bg-white border border-[var(--line)] p-2.5 rounded-xl focus:outline-none"></select>
-              </div>
-            </div>
-
-            <div class="text-center mb-6">
-              <button id="run-compare-btn"
-                class="accent-grad text-white font-bold text-sm px-6 py-3 rounded-xl hover:brightness-105 transition shadow-sm">
-                ⚖️ Run AI Comparison
+              <button id="run-compare-btn" type="button"
+                class="accent-grad text-white font-bold text-xs px-4 py-2 rounded-xl hover:brightness-105 active:scale-95 transition shadow-sm">
+                ⚖️ Run Comparison
               </button>
             </div>
 
-            <div id="compare-loading" class="hidden text-center py-12 text-sm text-[var(--ink-soft)] font-semibold">
-              <svg class="spin text-[var(--accent)] mx-auto mb-3" width="24" height="24" viewBox="0 0 24 24"
-                fill="none">
-                <circle cx="12" cy="12" r="9" stroke="#DCE6E1" stroke-width="3" />
-                <path d="M21 12a9 9 0 0 0-9-9" stroke="currentColor" stroke-width="3" stroke-linecap="round" />
-              </svg>
-              Analyzing both documents and contrasting policies...
-            </div>
-
-            <div id="compare-results" class="hidden space-y-6">
-              <!-- Overview -->
-              <div class="bg-[var(--bg)] border border-[var(--line)] rounded-2xl p-5">
-                <h3 class="font-bold text-sm uppercase tracking-wider text-[var(--accent)] mb-2">Comparative Overview
-                </h3>
-                <p id="comp-overview" class="text-sm leading-relaxed"></p>
-              </div>
-
-              <div class="grid grid-cols-1 md:grid-cols-2 gap-5">
-                <!-- Similarities -->
-                <div class="bg-[var(--bg)] border border-[var(--line)] rounded-2xl p-5">
-                  <h3 class="font-bold text-sm uppercase tracking-wider text-green-600 mb-3">🤝 Key Similarities</h3>
-                  <ul id="comp-similarities" class="space-y-2 text-sm"></ul>
+            <div class="flex-1 min-h-0 overflow-y-auto p-6 space-y-6">
+              <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                <div class="bg-[var(--bg)] border border-[var(--line)] rounded-2xl p-4">
+                  <label class="block text-xs font-bold uppercase tracking-wider text-[var(--ink-soft)] mb-2">Document 1</label>
+                  <select id="compare-doc-1"
+                    class="w-full text-xs font-bold bg-white dark:bg-[var(--card)] border border-[var(--line)] p-2.5 rounded-xl focus:outline-none"></select>
                 </div>
 
-                <!-- Differences -->
-                <div class="bg-[var(--bg)] border border-[var(--line)] rounded-2xl p-5">
-                  <h3 class="font-bold text-sm uppercase tracking-wider text-amber-600 mb-3">⚡ Key Differences</h3>
-                  <ul id="comp-differences" class="space-y-2 text-sm"></ul>
+                <div class="bg-[var(--bg)] border border-[var(--line)] rounded-2xl p-4">
+                  <label class="block text-xs font-bold uppercase tracking-wider text-[var(--ink-soft)] mb-2">Document 2</label>
+                  <select id="compare-doc-2"
+                    class="w-full text-xs font-bold bg-white dark:bg-[var(--card)] border border-[var(--line)] p-2.5 rounded-xl focus:outline-none"></select>
                 </div>
               </div>
 
-              <!-- Policy Updates & Conclusion -->
-              <div class="bg-[var(--bg)] border border-[var(--line)] rounded-2xl p-5">
-                <h3 class="font-bold text-sm uppercase tracking-wider text-[var(--accent)] mb-3">💡 Summary &amp;
-                  Recommendations</h3>
-                <p id="comp-recommendation" class="text-sm leading-relaxed font-medium"></p>
+              <div id="compare-loading" class="hidden text-center py-12 text-sm text-[var(--ink-soft)] font-semibold">
+                <svg class="spin text-[var(--accent)] mx-auto mb-3" width="24" height="24" viewBox="0 0 24 24" fill="none">
+                  <circle cx="12" cy="12" r="9" stroke="#DCE6E1" stroke-width="3" />
+                  <path d="M21 12a9 9 0 0 0-9-9" stroke="currentColor" stroke-width="3" stroke-linecap="round" />
+                </svg>
+                Analyzing both documents and contrasting policies...
+              </div>
+
+              <div id="compare-results" class="hidden space-y-6 fade-up">
+                <div class="bg-[var(--bg)] border border-[var(--line)] rounded-2xl p-5 card-shadow-sm">
+                  <h3 class="font-bold text-sm uppercase tracking-wider text-[var(--accent)] mb-2">Comparative Overview</h3>
+                  <p id="comp-overview" class="text-sm leading-relaxed"></p>
+                </div>
+
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-5">
+                  <div class="bg-[var(--bg)] border border-[var(--line)] rounded-2xl p-5 card-shadow-sm">
+                    <h3 class="font-bold text-sm uppercase tracking-wider text-green-600 mb-3">🤝 Key Similarities</h3>
+                    <ul id="comp-similarities" class="space-y-2 text-sm"></ul>
+                  </div>
+
+                  <div class="bg-[var(--bg)] border border-[var(--line)] rounded-2xl p-5 card-shadow-sm">
+                    <h3 class="font-bold text-sm uppercase tracking-wider text-amber-600 mb-3">⚡ Key Differences</h3>
+                    <ul id="comp-differences" class="space-y-2 text-sm"></ul>
+                  </div>
+                </div>
+
+                <div class="bg-[var(--bg)] border border-[var(--line)] rounded-2xl p-5 card-shadow-sm">
+                  <h3 class="font-bold text-sm uppercase tracking-wider text-[var(--accent)] mb-3">💡 Summary &amp; Recommendations</h3>
+                  <p id="comp-recommendation" class="text-sm leading-relaxed font-medium"></p>
+                </div>
               </div>
             </div>
           </div>
 
-          <!-- =================================================== -->
           <!-- TAB 6: EXPORT & REPORTS -->
-          <!-- =================================================== -->
           <div id="tab-reports" class="tab-panel">
-            <div class="mb-6">
-              <h2 class="font-display font-bold text-lg">Downloadable Reports &amp; Intelligence Exports</h2>
-              <p class="text-xs text-[var(--ink-soft)]">Export comprehensive intelligence reports, executive summaries,
-                Q&amp;A transcripts, and structured data.</p>
+            <div class="shrink-0 px-6 py-3.5 border-b border-[var(--line)] bg-gray-50/50 dark:bg-black/10">
+              <h2 class="font-display font-bold text-base text-[var(--ink)]">📥 Downloadable Reports &amp; Intelligence Exports</h2>
+              <p class="text-xs text-[var(--ink-soft)] mt-0.5">Export comprehensive intelligence reports, executive summaries, Q&amp;A transcripts, and structured data.</p>
             </div>
 
-            <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-5">
-              <div class="bg-[var(--bg)] border border-[var(--line)] rounded-2xl p-5 flex flex-col justify-between">
-                <div>
-                  <div class="text-2xl mb-2">📄</div>
-                  <p class="font-bold text-sm mb-1">Markdown Report (.md)</p>
-                  <p class="text-xs text-[var(--ink-soft)] mb-4">Complete structured document intelligence report
-                    formatted in clean Markdown.</p>
+            <div class="flex-1 min-h-0 overflow-y-auto p-6">
+              <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-5">
+                <div class="bg-[var(--bg)] border border-[var(--line)] rounded-2xl p-5 flex flex-col justify-between card-shadow-sm">
+                  <div>
+                    <div class="text-2xl mb-2">📄</div>
+                    <p class="font-bold text-sm mb-1">Markdown Report (.md)</p>
+                    <p class="text-xs text-[var(--ink-soft)] mb-4">Complete structured document intelligence report formatted in clean Markdown.</p>
+                  </div>
+                  <button id="download-md-btn" type="button"
+                    class="w-full accent-grad text-white font-bold text-xs py-2.5 rounded-xl hover:brightness-105 transition">
+                    Download Markdown (.md)
+                  </button>
                 </div>
-                <button id="download-md-btn"
-                  class="w-full accent-grad text-white font-bold text-xs py-2.5 rounded-xl hover:brightness-105 transition">
-                  Download Markdown (.md)
-                </button>
-              </div>
 
-              <div class="bg-[var(--bg)] border border-[var(--line)] rounded-2xl p-5 flex flex-col justify-between">
-                <div>
-                  <div class="text-2xl mb-2">🌐</div>
-                  <p class="font-bold text-sm mb-1">HTML Report (.html)</p>
-                  <p class="text-xs text-[var(--ink-soft)] mb-4">Self-contained HTML report designed for viewing and
-                    printing in any browser.</p>
+                <div class="bg-[var(--bg)] border border-[var(--line)] rounded-2xl p-5 flex flex-col justify-between card-shadow-sm">
+                  <div>
+                    <div class="text-2xl mb-2">🌐</div>
+                    <p class="font-bold text-sm mb-1">HTML Report (.html)</p>
+                    <p class="text-xs text-[var(--ink-soft)] mb-4">Self-contained HTML report designed for viewing and printing in any browser.</p>
+                  </div>
+                  <button id="download-html-btn" type="button"
+                    class="w-full text-[var(--accent)] border border-[var(--accent)] bg-white dark:bg-[var(--card)] font-bold text-xs py-2.5 rounded-xl hover:bg-[var(--accent-soft)] transition">
+                    Download HTML (.html)
+                  </button>
                 </div>
-                <button id="download-html-btn"
-                  class="w-full text-[var(--accent)] border border-[var(--accent)] bg-white font-bold text-xs py-2.5 rounded-xl hover:bg-[var(--accent-soft)] transition">
-                  Download HTML (.html)
-                </button>
-              </div>
 
-              <div class="bg-[var(--bg)] border border-[var(--line)] rounded-2xl p-5 flex flex-col justify-between">
-                <div>
-                  <div class="text-2xl mb-2">📝</div>
-                  <p class="font-bold text-sm mb-1">Plain Text Summary (.txt)</p>
-                  <p class="text-xs text-[var(--ink-soft)] mb-4">Extracted document text and executive overview in plain
-                    text format.</p>
+                <div class="bg-[var(--bg)] border border-[var(--line)] rounded-2xl p-5 flex flex-col justify-between card-shadow-sm">
+                  <div>
+                    <div class="text-2xl mb-2">📝</div>
+                    <p class="font-bold text-sm mb-1">Plain Text Summary (.txt)</p>
+                    <p class="text-xs text-[var(--ink-soft)] mb-4">Extracted document text and executive overview in plain text format.</p>
+                  </div>
+                  <button id="download-txt-btn" type="button"
+                    class="w-full text-[var(--ink)] border border-[var(--line)] bg-white dark:bg-[var(--card)] font-bold text-xs py-2.5 rounded-xl hover:bg-gray-100 dark:hover:bg-black/30 transition">
+                    Download Text (.txt)
+                  </button>
                 </div>
-                <button id="download-txt-btn"
-                  class="w-full text-[var(--ink)] border border-[var(--line)] bg-white font-bold text-xs py-2.5 rounded-xl hover:bg-gray-100 transition">
-                  Download Text (.txt)
-                </button>
-              </div>
 
-              <div class="bg-[var(--bg)] border border-[var(--line)] rounded-2xl p-5 flex flex-col justify-between">
-                <div>
-                  <div class="text-2xl mb-2">💬</div>
-                  <p class="font-bold text-sm mb-1">Q&amp;A Chat Transcript (.md)</p>
-                  <p class="text-xs text-[var(--ink-soft)] mb-4">Export all asked questions, AI answers, and source page
-                    citations.</p>
+                <div class="bg-[var(--bg)] border border-[var(--line)] rounded-2xl p-5 flex flex-col justify-between card-shadow-sm">
+                  <div>
+                    <div class="text-2xl mb-2">💬</div>
+                    <p class="font-bold text-sm mb-1">Q&amp;A Chat Transcript (.md)</p>
+                    <p class="text-xs text-[var(--ink-soft)] mb-4">Export all asked questions, AI answers, and source page citations.</p>
+                  </div>
+                  <button id="download-chat-btn" type="button"
+                    class="w-full text-[var(--ink)] border border-[var(--line)] bg-white dark:bg-[var(--card)] font-bold text-xs py-2.5 rounded-xl hover:bg-gray-100 dark:hover:bg-black/30 transition">
+                    Download Transcript (.md)
+                  </button>
                 </div>
-                <button id="download-chat-btn"
-                  class="w-full text-[var(--ink)] border border-[var(--line)] bg-white font-bold text-xs py-2.5 rounded-xl hover:bg-gray-100 transition">
-                  Download Transcript (.md)
-                </button>
-              </div>
 
-              <div class="bg-[var(--bg)] border border-[var(--line)] rounded-2xl p-5 flex flex-col justify-between">
-                <div>
-                  <div class="text-2xl mb-2">⚙️</div>
-                  <p class="font-bold text-sm mb-1">Structured JSON Data (.json)</p>
-                  <p class="text-xs text-[var(--ink-soft)] mb-4">Full document JSON metadata, page-by-page extracted
-                    content, and OCR details.</p>
+                <div class="bg-[var(--bg)] border border-[var(--line)] rounded-2xl p-5 flex flex-col justify-between card-shadow-sm">
+                  <div>
+                    <div class="text-2xl mb-2">⚙️</div>
+                    <p class="font-bold text-sm mb-1">Structured JSON Data (.json)</p>
+                    <p class="text-xs text-[var(--ink-soft)] mb-4">Full document JSON metadata, page-by-page extracted content, and OCR details.</p>
+                  </div>
+                  <button id="download-json-btn" type="button"
+                    class="w-full text-purple-700 dark:text-purple-400 border border-purple-300 dark:border-purple-800 bg-white dark:bg-[var(--card)] font-bold text-xs py-2.5 rounded-xl hover:bg-purple-50 dark:hover:bg-purple-950/40 transition">
+                    Download JSON (.json)
+                  </button>
                 </div>
-                <button id="download-json-btn"
-                  class="w-full text-purple-700 border border-purple-300 bg-white font-bold text-xs py-2.5 rounded-xl hover:bg-purple-50 transition">
-                  Download JSON (.json)
-                </button>
               </div>
             </div>
           </div>
 
         </div>
 
-        <div class="px-6 py-3 border-t border-[var(--line)] text-center bg-gray-50/50 dark:bg-transparent">
-          <p class="text-[11px] text-[var(--ink-soft)]">DocuMind AI Document Intelligence System • Verified Page
-            Citations</p>
+        <!-- Center Footer -->
+        <div class="shrink-0 px-4 py-2 border-t border-[var(--line)] text-center bg-gray-50/50 dark:bg-black/10">
+          <p class="text-[10px] text-[var(--ink-soft)]">DocuMind AI Document Intelligence • Verified Citations &amp; Fast Synthesis</p>
         </div>
       </section>
 
-      <!-- RIGHT SIDEBAR: Original Embedded PDF Viewer -->
-      <aside id="right-pdf-panel" class="space-y-4 flex flex-col">
+      <!-- RIGHT SIDEBAR: Original Embedded PDF Viewer & History -->
+      <aside id="right-pdf-panel" class="h-full min-h-0 flex flex-col gap-3 overflow-hidden">
         <div
-          class="bg-white border border-[var(--line)] rounded-2xl p-4 card-shadow flex flex-col flex-1 min-h-[620px]">
+          class="bg-white dark:bg-[var(--card)] border border-[var(--line)] rounded-2xl p-3.5 card-shadow flex flex-col flex-1 min-h-0 overflow-hidden">
 
           <!-- Viewer Header -->
-          <div class="flex items-center justify-between pb-3 mb-3 border-b border-[var(--line)] gap-2">
+          <div class="flex items-center justify-between pb-2.5 mb-2.5 border-b border-[var(--line)] gap-2 shrink-0">
             <div class="flex items-center gap-2 min-w-0">
-              <span class="text-base">📄</span>
+              <span class="text-sm">📄</span>
               <div class="min-w-0">
                 <p class="text-xs font-bold uppercase tracking-wider text-[var(--ink-soft)] truncate">Original PDF</p>
                 <span id="pdf-page-indicator" class="text-[11px] font-semibold text-[var(--accent)]">Page 1 of 1</span>
@@ -925,19 +977,19 @@
 
             <!-- Page Controls -->
             <div class="flex items-center gap-1 shrink-0">
-              <button id="pdf-prev-btn" title="Previous Page"
+              <button id="pdf-prev-btn" title="Previous Page" type="button"
                 class="w-7 h-7 rounded-lg border border-[var(--line)] flex items-center justify-center text-[var(--ink-soft)] hover:border-[var(--accent)] hover:text-[var(--accent)] transition text-xs font-bold focus-ring">
                 ‹
               </button>
               <div class="flex items-center gap-1 text-xs">
                 <input id="pdf-page-input" type="number" min="1" value="1"
-                  class="w-11 text-center text-xs font-bold bg-[var(--bg)] border border-[var(--line)] rounded-lg py-1 focus-ring outline-none focus:border-[var(--accent)]">
+                  class="w-10 text-center text-xs font-bold bg-[var(--bg)] border border-[var(--line)] rounded-lg py-1 focus-ring outline-none focus:border-[var(--accent)]">
               </div>
-              <button id="pdf-next-btn" title="Next Page"
+              <button id="pdf-next-btn" title="Next Page" type="button"
                 class="w-7 h-7 rounded-lg border border-[var(--line)] flex items-center justify-center text-[var(--ink-soft)] hover:border-[var(--accent)] hover:text-[var(--accent)] transition text-xs font-bold focus-ring">
                 ›
               </button>
-              <button id="pdf-open-tab-btn" title="Open PDF in new tab"
+              <button id="pdf-open-tab-btn" title="Open PDF in new tab" type="button"
                 class="w-7 h-7 rounded-lg border border-[var(--line)] flex items-center justify-center text-[var(--ink-soft)] hover:border-[var(--accent)] hover:text-[var(--accent)] transition text-xs focus-ring">
                 <svg width="13" height="13" viewBox="0 0 24 24" fill="none">
                   <path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6M15 3h6v6M10 14 21 3"
@@ -947,9 +999,9 @@
             </div>
           </div>
 
-          <!-- Embedded Viewer Container (~40-50% height with scrollbar) -->
+          <!-- Embedded Viewer Container -->
           <div id="pdf-viewer-container"
-            class="relative flex-1 rounded-xl border border-[var(--line)] overflow-y-auto bg-[var(--bg)] min-h-[460px] max-h-[75vh] flex flex-col p-3 space-y-4">
+            class="relative flex-1 min-h-0 rounded-xl border border-[var(--line)] overflow-y-auto bg-[var(--bg)] flex flex-col p-2.5 space-y-3">
             <!-- Continuous PDF.js Canvas Render Wrapper -->
             <div id="pdf-render-wrapper" class="w-full flex flex-col items-center space-y-4"></div>
             <!-- Fallback iframe for raw PDF viewer -->
@@ -964,7 +1016,7 @@
           </div>
 
           <!-- Status footer -->
-          <div class="mt-3 flex items-center justify-between text-[11px] text-[var(--ink-soft)]">
+          <div class="mt-2.5 flex items-center justify-between text-[11px] text-[var(--ink-soft)] shrink-0">
             <span id="pdf-viewer-status">Original View</span>
             <span class="text-[var(--accent)] font-semibold">Interactive Scroll &amp; Jump</span>
           </div>
@@ -972,19 +1024,17 @@
 
         <!-- HISTORY / PREVIOUS SEARCHES PANEL -->
         <div id="workspace-history-panel"
-          class="bg-white border border-[var(--line)] rounded-2xl p-4 card-shadow flex flex-col shrink-0">
-          <div class="flex items-center justify-between pb-2.5 mb-2.5 border-b border-[var(--line)]">
+          class="bg-white dark:bg-[var(--card)] border border-[var(--line)] rounded-2xl p-3 card-shadow flex flex-col shrink-0 max-h-[190px] overflow-hidden">
+          <div class="flex items-center justify-between pb-2 mb-2 border-b border-[var(--line)] shrink-0">
             <div class="flex items-center gap-2 min-w-0">
               <span class="text-sm">🕒</span>
-              <p class="text-xs font-bold uppercase tracking-wider text-[var(--ink-soft)] truncate">History / Previous
-                Searches</p>
+              <p class="text-xs font-bold uppercase tracking-wider text-[var(--ink-soft)] truncate">History / Previous Sessions</p>
             </div>
             <span id="workspace-history-count"
-              class="text-[10px] font-bold px-2 py-0.5 rounded-full bg-[var(--accent-soft)] text-[var(--accent)] shrink-0">0
-              sessions</span>
+              class="text-[10px] font-bold px-2 py-0.5 rounded-full bg-[var(--accent-soft)] text-[var(--accent)] shrink-0">0 sessions</span>
           </div>
 
-          <div id="workspace-history-list" class="space-y-2 max-h-[240px] overflow-y-auto pr-1"></div>
+          <div id="workspace-history-list" class="space-y-1.5 overflow-y-auto max-h-[130px] pr-1"></div>
         </div>
       </aside>
 
@@ -1125,14 +1175,15 @@
       // ---- Markdown Renderer ----
       function renderMarkdown(str) {
         if (!str) return '';
-        let html = str
+        let clean = String(str).replace(/\\n/g, '\n');
+        let html = clean
           .replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;')
           .replace(/^### (.*$)/gim, '<h3 class="font-bold text-sm mt-3 mb-1 text-[var(--accent)]">$1</h3>')
           .replace(/^## (.*$)/gim, '<h2 class="font-bold text-base mt-4 mb-2 text-[var(--accent)]">$1</h2>')
           .replace(/^# (.*$)/gim, '<h1 class="font-bold text-lg mt-4 mb-2">$1</h1>')
           .replace(/\*\*(.*?)\*\*/g, '<strong>$1</strong>')
           .replace(/\*(.*?)\*/g, '<em>$1</em>')
-          .replace(/\[Page (\d+(?:,\s*\d+)*)\]/gi, '<span class="inline-flex items-center gap-1 text-xs font-semibold px-2 py-0.5 rounded-md bg-[var(--accent-soft)] text-[var(--accent)] cursor-pointer hover:underline page-badge" data-page="$1">📄 Page $1</span>')
+          .replace(/\[Page (\d+(?:,\s*\d+)*)\]/gi, '<button type="button" class="inline-flex items-center gap-1 text-xs font-semibold px-2 py-0.5 rounded-md bg-[var(--accent-soft)] text-[var(--accent)] hover:underline page-badge cursor-pointer" data-page="$1">📄 Page $1</button>')
           .replace(/^\s*[\-\*]\s+(.*$)/gim, '<li class="ml-4 list-disc">$1</li>')
           .replace(/^\s*\d+\.\s+(.*$)/gim, '<li class="ml-4 list-decimal">$1</li>')
           .replace(/\n\n/g, '<br><br>');
@@ -1152,7 +1203,13 @@
 
           if (!window.currentDocument) return;
 
-          if (targetId === 'tab-summary') {
+          if (targetId === 'tab-qa') {
+            const scrollArea = document.getElementById('qa-scroll-area');
+            if (scrollArea) {
+              setTimeout(() => { scrollArea.scrollTop = scrollArea.scrollHeight; }, 30);
+            }
+            if (qaInput) qaInput.focus();
+          } else if (targetId === 'tab-summary') {
             const execEl = document.getElementById('summary-exec');
             if (!execEl || !execEl.textContent.trim() || document.getElementById('summary-content').classList.contains('hidden')) {
               await fetchSummary();
@@ -1556,20 +1613,37 @@
 
       // ---- Session & Q&A Persistence ----
       function getQAKey(docId) { return QA_STORAGE_KEY_PREFIX + (docId || 'default'); }
+
+      function escapeHtml(str) {
+        if (!str) return '';
+        return String(str)
+          .replace(/&/g, '&amp;')
+          .replace(/</g, '&lt;')
+          .replace(/>/g, '&gt;')
+          .replace(/"/g, '&quot;')
+          .replace(/'/g, '&#039;');
+      }
+
       function loadQAHistoryForDoc(docId) {
         qaHistory.innerHTML = '';
         const key = getQAKey(docId);
         try {
           const raw = localStorage.getItem(key);
           const list = raw ? JSON.parse(raw) : [];
+          const quickChips = document.getElementById('qa-quick-chips');
           if (list.length) {
             qaEmpty.classList.add('hidden');
-            qaToolbar.classList.remove('hidden');
-            qaCountBadge.textContent = `${list.length} question(s) answered`;
-            list.forEach(entry => appendQAItem(entry));
+            if (qaToolbar) qaToolbar.classList.remove('hidden');
+            if (qaCountBadge) qaCountBadge.textContent = `${list.length} question(s) answered`;
+            if (quickChips) quickChips.classList.remove('hidden');
+            list.forEach(entry => appendQAItem(entry, false));
+            const scrollArea = document.getElementById('qa-scroll-area');
+            if (scrollArea) setTimeout(() => { scrollArea.scrollTop = scrollArea.scrollHeight; }, 40);
           } else {
             qaEmpty.classList.remove('hidden');
-            qaToolbar.classList.add('hidden');
+            if (qaToolbar) qaToolbar.classList.add('hidden');
+            if (quickChips) quickChips.classList.add('hidden');
+            if (qaCountBadge) qaCountBadge.textContent = `0 questions answered`;
           }
         } catch (e) { console.error('Failed to load QA history:', e); }
       }
@@ -1581,39 +1655,109 @@
           const list = raw ? JSON.parse(raw) : [];
           list.push(entry);
           localStorage.setItem(key, JSON.stringify(list));
-          qaToolbar.classList.remove('hidden');
-          qaCountBadge.textContent = `${list.length} question(s) answered`;
+          if (qaToolbar) qaToolbar.classList.remove('hidden');
+          if (qaCountBadge) qaCountBadge.textContent = `${list.length} question(s) answered`;
+          const quickChips = document.getElementById('qa-quick-chips');
+          if (quickChips) quickChips.classList.remove('hidden');
           renderHistoryList();
         } catch (e) { console.error('Failed to save QA item:', e); }
       }
 
-      function appendQAItem({ question, answer, pages, page, sourceText }) {
-        const frag = qaItemTemplate.content.cloneNode(true);
-        const item = frag.querySelector('.qa-item');
+      function appendQAItem({ question, answer, pages, page, sourceText }, shouldScroll = true) {
+        if (!qaHistory) return;
 
-        item.querySelector('[data-role="question-text"]').textContent = question;
-        item.querySelector('[data-role="answer-text"]').innerHTML = renderMarkdown(answer);
-        item.querySelector('[data-role="extract-text"]').textContent = sourceText || 'No excerpt available.';
+        // Container row for this turn
+        const turnContainer = document.createElement('div');
+        turnContainer.className = 'qa-item space-y-3 fade-up';
 
-        const badgesContainer = item.querySelector('[data-role="cited-badges"]');
-        badgesContainer.innerHTML = '';
+        // 1. USER QUESTION BUBBLE (ON THE RIGHT)
+        const userRow = document.createElement('div');
+        userRow.className = 'flex justify-end items-end gap-2 w-full pl-8';
+        userRow.innerHTML = `
+          <div class="user-bubble max-w-[82%] rounded-2xl rounded-tr-xs px-4 py-2.5 shadow-sm text-xs sm:text-sm font-medium leading-relaxed break-words" data-role="question-text">
+            ${escapeHtml(question)}
+          </div>
+          <div class="w-7 h-7 rounded-full bg-[var(--accent-soft-2)] text-[var(--accent)] font-bold text-xs flex items-center justify-center shrink-0 mb-0.5 shadow-sm" title="You">
+            👤
+          </div>
+        `;
+        turnContainer.appendChild(userRow);
+
+        // 2. AI ANSWER BUBBLE (ON THE LEFT)
+        const aiRow = document.createElement('div');
+        aiRow.className = 'flex justify-start items-start gap-3 w-full pr-4';
 
         const pageNums = pages && pages.length ? pages : (page ? [page] : []);
+        let badgesHtml = '';
         if (pageNums.length) {
-          pageNums.forEach(p => {
-            const badge = document.createElement('button');
-            badge.type = 'button';
-            badge.className = 'text-xs font-semibold px-2.5 py-1 rounded-md bg-[var(--accent-soft)] text-[var(--accent)] hover:underline flex items-center gap-1';
-            badge.innerHTML = `📄 Page ${p}`;
-            badge.addEventListener('click', () => highlightPage(p));
-            badgesContainer.appendChild(badge);
-          });
+          badgesHtml = pageNums.map(p => `
+            <button type="button" class="text-xs font-semibold px-2.5 py-1 rounded-md bg-[var(--accent-soft)] text-[var(--accent)] hover:underline flex items-center gap-1 page-badge cursor-pointer" data-page="${p}">
+              📄 Page ${p}
+            </button>
+          `).join('');
         } else {
-          badgesContainer.innerHTML = '<span class="text-xs text-gray-400">Whole Document</span>';
+          badgesHtml = '<span class="text-xs text-[var(--ink-soft)] italic">Whole Document</span>';
         }
 
-        qaHistory.appendChild(item);
-        qaHistory.lastElementChild.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+        const renderedAnswer = renderMarkdown(answer);
+        const excerpt = sourceText ? escapeHtml(sourceText) : 'No excerpt available.';
+
+        aiRow.innerHTML = `
+          <div class="w-8 h-8 rounded-xl accent-grad flex items-center justify-center text-white text-xs font-bold shadow-sm shrink-0 mt-0.5" title="DocuMind AI">
+            ✨
+          </div>
+          <div class="ai-bubble flex-1 max-w-[92%] border rounded-2xl rounded-tl-xs p-4 shadow-sm space-y-3">
+            <div class="flex items-center justify-between pb-2 border-b border-[var(--line)]">
+              <div class="flex items-center gap-2">
+                <span class="text-xs font-bold text-[var(--accent)] uppercase tracking-wider">DocuMind AI</span>
+                <span class="text-[10px] font-semibold px-2 py-0.5 rounded-full bg-[var(--accent-soft)] text-[var(--accent)]">Verified Citation</span>
+              </div>
+              <button data-role="copy-answer" type="button"
+                class="copy-answer-btn p-1.5 rounded-lg hover:bg-white dark:hover:bg-black/20 text-[var(--ink-soft)] hover:text-[var(--accent)] transition text-xs font-semibold flex items-center gap-1 focus-ring cursor-pointer"
+                title="Copy answer">
+                <svg width="13" height="13" viewBox="0 0 24 24" fill="none">
+                  <rect x="8" y="8" width="12" height="12" rx="2" stroke="currentColor" stroke-width="1.8" />
+                  <path d="M16 8V6a2 2 0 0 0-2-2H6a2 2 0 0 0-2 2v8a2 2 0 0 0 2 2h2" stroke="currentColor" stroke-width="1.8" />
+                </svg>
+                <span>Copy</span>
+              </button>
+            </div>
+
+            <div data-role="answer-text" class="text-xs sm:text-sm leading-relaxed text-[var(--ink)] font-normal space-y-2">
+              ${renderedAnswer}
+            </div>
+
+            <div data-role="cited-pages-container" class="pt-2.5 border-t border-[var(--line)] flex flex-wrap items-center gap-2">
+              <span class="text-xs font-bold text-[var(--ink-soft)]">Cited Sources:</span>
+              <div data-role="cited-badges" class="flex flex-wrap gap-1.5">
+                ${badgesHtml}
+              </div>
+            </div>
+
+            <div class="mt-2 rounded-xl border border-[var(--line)] overflow-hidden bg-white dark:bg-[var(--card)]">
+              <button data-role="extract-toggle" type="button"
+                class="w-full flex items-center justify-between px-3.5 py-2 hover:bg-[var(--bg)] transition text-xs font-semibold text-[var(--ink-soft)] cursor-pointer">
+                <span>View Extracted Page Context</span>
+                <svg data-role="extract-chevron" width="13" height="13" viewBox="0 0 24 24" fill="none" class="transition-transform rotate-0">
+                  <path d="m6 9 6 6 6-6" stroke="currentColor" stroke-width="2" stroke-linecap="round" />
+                </svg>
+              </button>
+              <div data-role="extract-body" class="hidden px-3.5 pb-3 pt-1 border-t border-[var(--line)]">
+                <p data-role="extract-text" class="text-xs leading-relaxed text-[var(--ink-soft)] whitespace-pre-wrap font-mono max-h-40 overflow-y-auto">${excerpt}</p>
+              </div>
+            </div>
+          </div>
+        `;
+        turnContainer.appendChild(aiRow);
+
+        qaHistory.appendChild(turnContainer);
+
+        if (shouldScroll) {
+          const scrollArea = document.getElementById('qa-scroll-area');
+          if (scrollArea) {
+            scrollArea.scrollTo({ top: scrollArea.scrollHeight, behavior: 'smooth' });
+          }
+        }
       }
 
       // ---- Suggested Prompt Chips ----
@@ -1638,6 +1782,14 @@
         qaEmpty.classList.add('hidden');
         qaLoading.classList.remove('hidden');
         qaInput.value = '';
+
+        const quickChips = document.getElementById('qa-quick-chips');
+        if (quickChips) quickChips.classList.remove('hidden');
+
+        const scrollArea = document.getElementById('qa-scroll-area');
+        if (scrollArea) {
+          scrollArea.scrollTo({ top: scrollArea.scrollHeight, behavior: 'smooth' });
+        }
 
         // Check if prompt explicitly requests a page (e.g. "Tell me about page 5", "page 5", "p. 5")
         const pageMatch = q.match(/\b(?:page|p\.?)\s*#?\s*(\d+)\b/i);
@@ -1671,7 +1823,7 @@
             sourceText: data.source_text
           };
 
-          appendQAItem(entry);
+          appendQAItem(entry, true);
           pushQAHistoryForDoc(window.currentDocument.documentId, entry);
 
           const primaryPage = (data.pages && data.pages.length) ? data.pages[0] : data.page;
@@ -1687,7 +1839,7 @@
             pages: [],
             sourceText: err.message
           };
-          appendQAItem(entry);
+          appendQAItem(entry, true);
         }
       });
 
@@ -1698,19 +1850,23 @@
         const badgeBtn = e.target.closest('.page-badge');
 
         if (copyBtn) {
-          const item = copyBtn.closest('.qa-item');
-          const text = item.querySelector('[data-role="answer-text"]').innerText;
+          const item = copyBtn.closest('.qa-item') || copyBtn.closest('.ai-bubble');
+          const answerTextEl = item.querySelector('[data-role="answer-text"]');
+          const text = answerTextEl ? answerTextEl.innerText : '';
           await navigator.clipboard.writeText(text);
+          const origHtml = copyBtn.innerHTML;
           copyBtn.innerHTML = `✓ Copied`;
-          setTimeout(() => { copyBtn.innerHTML = `<svg width="14" height="14" viewBox="0 0 24 24" fill="none"><rect x="8" y="8" width="12" height="12" rx="2" stroke="currentColor" stroke-width="1.6"/><path d="M16 8V6a2 2 0 0 0-2-2H6a2 2 0 0 0-2 2v8a2 2 0 0 0 2 2h2" stroke="currentColor" stroke-width="1.6"/></svg> Copy`; }, 1500);
+          setTimeout(() => { copyBtn.innerHTML = origHtml; }, 1500);
         }
 
         if (toggleBtn) {
-          const item = toggleBtn.closest('.qa-item');
+          const item = toggleBtn.closest('.qa-item') || toggleBtn.parentElement;
           const body = item.querySelector('[data-role="extract-body"]');
           const chevron = item.querySelector('[data-role="extract-chevron"]');
-          const hidden = body.classList.toggle('hidden');
-          chevron.style.transform = hidden ? 'rotate(0deg)' : 'rotate(180deg)';
+          if (body) {
+            const isHidden = body.classList.toggle('hidden');
+            if (chevron) chevron.style.transform = isHidden ? 'rotate(0deg)' : 'rotate(180deg)';
+          }
         }
 
         if (badgeBtn) {
@@ -1726,14 +1882,17 @@
         localStorage.removeItem(getQAKey(window.currentDocument.documentId));
         qaHistory.innerHTML = '';
         qaEmpty.classList.remove('hidden');
-        qaToolbar.classList.add('hidden');
+        if (qaToolbar) qaToolbar.classList.add('hidden');
+        const quickChips = document.getElementById('qa-quick-chips');
+        if (quickChips) quickChips.classList.add('hidden');
+        if (qaCountBadge) qaCountBadge.textContent = '0 questions answered';
         qaInput.value = '';
 
         // 2. Clear AI Summary
         const summaryContent = document.getElementById('summary-content');
         if (summaryContent) summaryContent.classList.add('hidden');
         const summaryExec = document.getElementById('summary-exec');
-        if (summaryExec) summaryExec.textContent = '';
+        if (summaryExec) summaryExec.innerHTML = '';
         const summaryTakeaways = document.getElementById('summary-takeaways');
         if (summaryTakeaways) summaryTakeaways.innerHTML = '';
         const summaryMetrics = document.getElementById('summary-metrics');
@@ -1795,7 +1954,184 @@
         a.click();
       });
 
-      // ---- AI Summarizer ----
+      // ---- AI Summarizer: Robust Response Parsing & Clean Human Display ----
+      function parseSummaryResponse(data) {
+        let raw = data && data.summary !== undefined ? data.summary : data;
+
+        // 1. If raw is a string, attempt JSON parse
+        if (typeof raw === 'string') {
+          const stripped = raw.trim().replace(/^```json\s*/i, '').replace(/^```\s*/i, '').replace(/```$/i, '').trim();
+          try {
+            raw = JSON.parse(stripped);
+          } catch (e) {
+            raw = { executive_summary: raw };
+          }
+        }
+
+        // 2. If raw.executive_summary is a string containing JSON
+        if (raw && typeof raw.executive_summary === 'string') {
+          const candidate = raw.executive_summary.trim().replace(/^```json\s*/i, '').replace(/^```\s*/i, '').replace(/```$/i, '').trim();
+          if (candidate.startsWith('{') && candidate.endsWith('}')) {
+            try {
+              const nested = JSON.parse(candidate);
+              if (nested && typeof nested === 'object') {
+                raw = {
+                  ...nested,
+                  ...raw,
+                  executive_summary: nested.executive_summary || raw.executive_summary
+                };
+              }
+            } catch (e) { }
+          }
+        }
+
+        // 3. Extract and sanitize executive_summary text
+        let execText = '';
+        if (raw && raw.executive_summary) {
+          execText = String(raw.executive_summary);
+        } else if (raw && raw.summary) {
+          execText = typeof raw.summary === 'string' ? raw.summary : JSON.stringify(raw.summary);
+        } else if (typeof raw === 'string') {
+          execText = raw;
+        }
+
+        // Strip code fences
+        execText = execText.replace(/^```json\s*/i, '').replace(/^```\s*/i, '').replace(/```$/i, '').trim();
+
+        // If execText still has JSON key "executive_summary": "..."
+        if (execText.includes('"executive_summary":')) {
+          const match = execText.match(/"executive_summary"\s*:\s*"((?:[^"\\]|\\.)*)"/);
+          if (match && match[1]) {
+            try {
+              execText = JSON.parse(`"${match[1]}"`);
+            } catch (e) {
+              execText = match[1].replace(/\\n/g, '\n').replace(/\\"/g, '"');
+            }
+          }
+        }
+
+        // Unescape literal \n strings
+        execText = execText.replace(/\\n/g, '\n').replace(/\\r/g, '').replace(/\\"/g, '"');
+        // Clean leading/trailing JSON brackets/quotes
+        execText = execText.replace(/^["'{}\[\]\s]+|["'{}\[\]\s]+$/g, '').trim();
+
+        // Helper to clean and normalize list items
+        function cleanList(val, fallbackKey) {
+          if (!val && raw && fallbackKey && raw[fallbackKey]) {
+            val = raw[fallbackKey];
+          }
+          if (!val) return [];
+          let items = [];
+          if (Array.isArray(val)) {
+            items = val;
+          } else if (typeof val === 'string') {
+            const trimmed = val.trim();
+            if (trimmed.startsWith('[') && trimmed.endsWith(']')) {
+              try {
+                const parsed = JSON.parse(trimmed);
+                if (Array.isArray(parsed)) items = parsed;
+              } catch (e) { }
+            }
+            if (!items.length) {
+              items = trimmed.split(/\r?\n/).filter(line => line.trim().length > 0);
+            }
+          } else if (typeof val === 'object') {
+            items = Object.entries(val).map(([k, v]) => `${k}: ${v}`);
+          }
+
+          return items
+            .map(item => {
+              if (typeof item === 'object' && item !== null) {
+                return Object.entries(item).map(([k, v]) => `${k}: ${v}`).join(' — ');
+              }
+              let s = String(item).replace(/\\n/g, ' ').replace(/\\"/g, '"').trim();
+              // Remove leading bullets, hyphens, numbers
+              s = s.replace(/^[•\-\*\d\.\)\s]+/, '').trim();
+              // Remove enclosing quotes
+              s = s.replace(/^["']+|["']+$/g, '').trim();
+              return s;
+            })
+            .filter(s => s.length > 0 && !s.startsWith('{') && !s.endsWith('}'));
+        }
+
+        const takeaways = cleanList(raw.key_takeaways, 'takeaways');
+        const metrics = cleanList(raw.key_metrics_and_numbers, 'key_metrics');
+        const actions = cleanList(raw.action_items_and_compliance, 'action_items');
+
+        return {
+          executive_summary: execText || 'No executive summary could be synthesized for this document.',
+          key_takeaways: takeaways,
+          key_metrics: metrics,
+          action_items: actions
+        };
+      }
+
+      function renderCleanSummary(parsed) {
+        // 1. Executive Summary Paragraphs
+        const execEl = document.getElementById('summary-exec');
+        const rawParas = parsed.executive_summary.split(/\n\s*\n|\n/);
+        const paras = rawParas.map(p => p.trim()).filter(p => p.length > 0);
+
+        if (paras.length) {
+          execEl.innerHTML = paras.map(p => `<p class="leading-relaxed mb-3 last:mb-0 text-sm font-normal text-[var(--ink)]">${renderMarkdown(p)}</p>`).join('');
+        } else {
+          execEl.innerHTML = `<p class="text-sm text-[var(--ink-soft)] italic">No executive summary available.</p>`;
+        }
+
+        // 2. Key Takeaways
+        const takeawaysEl = document.getElementById('summary-takeaways');
+        if (parsed.key_takeaways && parsed.key_takeaways.length) {
+          takeawaysEl.innerHTML = parsed.key_takeaways.map(t => `
+            <li class="flex items-start gap-2.5 p-2.5 rounded-xl bg-white dark:bg-[var(--card)] border border-[var(--line)] card-shadow-sm">
+              <span class="w-5 h-5 rounded-full bg-[var(--accent-soft)] text-[var(--accent)] font-bold text-xs flex items-center justify-center shrink-0 mt-0.5">✓</span>
+              <span class="text-xs leading-relaxed text-[var(--ink)] font-medium">${renderMarkdown(t)}</span>
+            </li>
+          `).join('');
+        } else {
+          takeawaysEl.innerHTML = `<li class="text-xs text-[var(--ink-soft)] italic py-2">No key takeaways extracted.</li>`;
+        }
+
+        // 3. Key Metrics
+        const metricsEl = document.getElementById('summary-metrics');
+        if (parsed.key_metrics && parsed.key_metrics.length) {
+          metricsEl.innerHTML = parsed.key_metrics.map(m => {
+            const parts = m.split(/:\s*(.+)/);
+            if (parts.length >= 2) {
+              return `
+                <li class="flex items-start gap-2.5 p-2.5 rounded-xl bg-white dark:bg-[var(--card)] border border-[var(--line)] card-shadow-sm">
+                  <span class="w-5 h-5 rounded-full bg-blue-50 text-blue-600 dark:bg-blue-950/50 dark:text-blue-400 font-bold text-xs flex items-center justify-center shrink-0 mt-0.5">📊</span>
+                  <div class="text-xs leading-relaxed">
+                    <span class="font-bold text-[var(--ink)]">${escapeHtml(parts[0])}:</span>
+                    <span class="text-[var(--accent)] font-semibold ml-1">${renderMarkdown(parts[1])}</span>
+                  </div>
+                </li>
+              `;
+            }
+            return `
+              <li class="flex items-start gap-2.5 p-2.5 rounded-xl bg-white dark:bg-[var(--card)] border border-[var(--line)] card-shadow-sm">
+                <span class="w-5 h-5 rounded-full bg-blue-50 text-blue-600 dark:bg-blue-950/50 dark:text-blue-400 font-bold text-xs flex items-center justify-center shrink-0 mt-0.5">📊</span>
+                <span class="text-xs leading-relaxed text-[var(--ink)] font-medium">${renderMarkdown(m)}</span>
+              </li>
+            `;
+          }).join('');
+        } else {
+          metricsEl.innerHTML = `<li class="text-xs text-[var(--ink-soft)] italic py-2">No numerical metrics identified.</li>`;
+        }
+
+        // 4. Action Items & Compliance
+        const actionsEl = document.getElementById('summary-actions');
+        if (parsed.action_items && parsed.action_items.length) {
+          actionsEl.innerHTML = parsed.action_items.map(a => `
+            <li class="flex items-start gap-2.5 p-2.5 rounded-xl bg-white dark:bg-[var(--card)] border border-amber-200/70 dark:border-amber-900/40 card-shadow-sm">
+              <span class="w-5 h-5 rounded-full bg-amber-50 text-amber-600 dark:bg-amber-950/50 dark:text-amber-400 font-bold text-xs flex items-center justify-center shrink-0 mt-0.5">⚠️</span>
+              <span class="text-xs leading-relaxed text-[var(--ink)] font-medium">${renderMarkdown(a)}</span>
+            </li>
+          `).join('');
+        } else {
+          actionsEl.innerHTML = `<li class="text-xs text-[var(--ink-soft)] italic py-2">No compliance action items noted.</li>`;
+        }
+      }
+
       async function fetchSummary() {
         if (!window.currentDocument) return;
         const loader = document.getElementById('summary-loading');
@@ -1813,17 +2149,8 @@
           const data = await res.json();
           if (!res.ok || !data.success) throw new Error(data.error || 'Summarization failed');
 
-          const sum = data.summary;
-          document.getElementById('summary-exec').textContent = sum.executive_summary || 'No summary available.';
-
-          const takeawaysEl = document.getElementById('summary-takeaways');
-          takeawaysEl.innerHTML = (sum.key_takeaways || []).map(t => `<li class="flex items-start gap-2"><span class="text-[var(--accent)] font-bold">•</span> <span>${t}</span></li>`).join('');
-
-          const metricsEl = document.getElementById('summary-metrics');
-          metricsEl.innerHTML = (sum.key_metrics_and_numbers || []).map(m => `<li class="flex items-start gap-2"><span class="text-blue-600 font-bold">📊</span> <span>${m}</span></li>`).join('');
-
-          const actionsEl = document.getElementById('summary-actions');
-          actionsEl.innerHTML = (sum.action_items_and_compliance || []).map(a => `<li class="flex items-start gap-2"><span class="text-amber-600 font-bold">⚠️</span> <span>${a}</span></li>`).join('');
+          const parsed = parseSummaryResponse(data);
+          renderCleanSummary(parsed);
 
           content.classList.remove('hidden');
         } catch (e) {
@@ -1834,6 +2161,24 @@
       }
 
       document.getElementById('generate-summary-btn').addEventListener('click', fetchSummary);
+
+      const copySummaryReportBtn = document.getElementById('copy-summary-report-btn');
+      if (copySummaryReportBtn) {
+        copySummaryReportBtn.addEventListener('click', async () => {
+          const execEl = document.getElementById('summary-exec');
+          const execText = execEl ? execEl.innerText : '';
+          const takeaways = Array.from(document.querySelectorAll('#summary-takeaways li')).map(li => '• ' + li.innerText.replace(/^✓\s*/, '')).join('\n');
+          const metrics = Array.from(document.querySelectorAll('#summary-metrics li')).map(li => '• ' + li.innerText.replace(/^📊\s*/, '')).join('\n');
+          const actions = Array.from(document.querySelectorAll('#summary-actions li')).map(li => '• ' + li.innerText.replace(/^⚠️\s*/, '')).join('\n');
+
+          const report = `# ${window.currentDocument?.filename || 'Document'} — Executive Intelligence Report\n\n## EXECUTIVE SUMMARY\n${execText}\n\n## KEY TAKEAWAYS\n${takeaways}\n\n## KEY METRICS & NUMBERS\n${metrics}\n\n## COMPLIANCE & ACTION ITEMS\n${actions}`;
+
+          await navigator.clipboard.writeText(report);
+          const origHtml = copySummaryReportBtn.innerHTML;
+          copySummaryReportBtn.innerHTML = `✓ Copied Report!`;
+          setTimeout(() => { copySummaryReportBtn.innerHTML = origHtml; }, 2000);
+        });
+      }
 
       // ---- Keywords Extractor ----
       async function fetchKeywords() {
